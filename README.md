@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/fabian-gubler/celllster/main/assets/logo-colorful.png" alt="Logo" width="750" height="300">
+  <img src="https://raw.githubusercontent.com/fabian-gubler/celllster/main/assets/logo-colorful.svg" alt="banner" width="750" height="300">
 </p>
 <p align="center">
   <strong>Empowering Offline Collaboration in Spreadsheets</strong>
@@ -8,7 +8,6 @@
   Break free from the chains of constant connectivity with the power of local-first software. Dive into a revolutionary way of collaboratively editing spreadsheet formulas without the need for real-time online presence. Experience seamless merges using CRDTs and witness the power of structured conflict resolution.
 </p>
 
----
 
 ## 🌟 Main Features
 
@@ -16,7 +15,6 @@
 2. **Conflict-free Merges with CRDTs**: Tailored CRDT implementations that bring robustness to merging offline formula edits.
 3. **Interactive UI**: Engage with an intuitive interface, input your formulas, and see the magic unfold.
 
----
 
 ## 🔍 About
 
@@ -32,7 +30,6 @@ With an abundance of text-based collaborative tools, collaborative spreadsheet e
 
 We're building a tool to facilitate offline collaborative editing of spreadsheet formulas. Leveraging the structure of Excel formulas, we'll merge changes using their AST representations, ensuring more efficient and accurate results.
 
----
 
 ## 🚀 Getting Started
 
@@ -60,7 +57,6 @@ We're building a tool to facilitate offline collaborative editing of spreadsheet
 
 > **Note**: More detailed instructions and relevant scripts for Docker setup will be added shortly.
 
----
 
 ### Developing the Application (Using Nix)
 
@@ -83,16 +79,13 @@ We're building a tool to facilitate offline collaborative editing of spreadsheet
 
 > **Note**: Integration of Nix for development is currently in progress. More detailed instructions and relevant scripts will be added soon.
 
----
 
 ## 📖 Documentation
 
 Further documentation on how to use the tool, contribute, and delve deeper into its features will be provided soon. Stay tuned!
 
----
 
 💡 **Feedback & Contributions**: We're always open to feedback and contributions. Feel free to open issues, suggest features, or contribute to the codebase.
 
----
 
 Thank you for being a part of this revolutionary journey. Let's redefine collaborative spreadsheet editing together!
