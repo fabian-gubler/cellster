@@ -84,4 +84,6 @@ We're building a tool to facilitate offline collaborative editing of spreadsheet
 
 Further documentation on how to use the tool, contribute, and delve deeper into its features will be provided soon. Stay tuned!
 
-## 💡 **Feedback & Contributions**: We're always open to feedback and contributions. Feel free to open issues, suggest features, or contribute to the codebase.
+## 💡 **Feedback & Contributions** 
+
+We're always open to feedback and contributions. Feel free to open issues, suggest features, or contribute to the codebase.
