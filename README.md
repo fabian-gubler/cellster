@@ -39,18 +39,18 @@ We're building a tool to facilitate offline collaborative editing of spreadsheet
 
 2. Clone the repository:
    ```sh
-   git clone https://github.com/YOUR_GITHUB_USERNAME/PROJECT_NAME.git
+   git clone https://github.com/fabian-gubler/cellster.git
    ```
 
 3. Navigate to the project directory:
    ```sh
-   cd PROJECT_NAME
+   cd cellster
    ```
 
 4. Build and run the Docker container for the web application:
    ```sh
-   docker build -t PROJECT_NAME .
-   docker run -p 8080:8080 PROJECT_NAME
+   docker build -t cellster .
+   docker run -p 8080:8080 cellster
    ```
 
 5. Open your browser and visit `http://localhost:8080`.
@@ -64,12 +64,12 @@ We're building a tool to facilitate offline collaborative editing of spreadsheet
   
 2. Clone the repository:
    ```sh
-   git clone https://github.com/YOUR_GITHUB_USERNAME/PROJECT_NAME.git
+   git clone https://github.com/fabian-gubler/cellster.git
    ```
 
 3. Navigate to the project directory:
    ```sh
-   cd PROJECT_NAME
+   cd cellster
    ```
 
 4. Using Nix, set up the development environment. This will ensure that all the required dependencies for both the backend (Python) and the frontend (Web tech) are installed:
@@ -84,6 +84,7 @@ We're building a tool to facilitate offline collaborative editing of spreadsheet
 
 Further documentation on how to use the tool, contribute, and delve deeper into its features will be provided soon. Stay tuned!
 
+---
 
 💡 **Feedback & Contributions**: We're always open to feedback and contributions. Feel free to open issues, suggest features, or contribute to the codebase.
 
