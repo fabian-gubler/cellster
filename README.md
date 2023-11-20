@@ -26,10 +26,6 @@ In today's cloud-centric era, most collaboration tools rely on real-time connect
 
 With an abundance of text-based collaborative tools, collaborative spreadsheet editing remains a daunting challenge. By harnessing the inherent structure of Excel formulas, we're crafting a solution that promises precise merging with reduced conflicts.
 
-### Project Description
-
-We're building a tool to facilitate offline collaborative editing of spreadsheet formulas. Leveraging the structure of Excel formulas, we'll merge changes using their AST representations, ensuring more efficient and accurate results.
-
 
 ## 🚀 Getting Started
 
