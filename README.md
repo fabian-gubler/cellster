@@ -57,24 +57,27 @@ With an abundance of text-based collaborative tools, collaborative spreadsheet e
 ### Developing the Application (Using Nix)
 
 1. **Prerequisites**: We use Nix for a reproducible development experience. Ensure you have it installed. Instructions for installation can be found [here](https://nixos.org/download.html).
+
+2. **Enable nix flake**: The `flake` feature is still considered experimental thus a specific Nix configuration is necessary in `~/.config/nix/nix.conf`:
+
+```sh
+experimental-features = nix-command flakes
+```
   
-2. Clone the repository:
+3. Clone the repository:
    ```sh
    git clone https://github.com/fabian-gubler/cellster.git
    ```
 
-3. Navigate to the project directory:
+4. Navigate to the project directory:
    ```sh
    cd cellster
    ```
 
 4. Using Nix, set up the development environment. This will ensure that all the required dependencies for both the backend (Python) and the frontend (Web tech) are installed:
    ```sh
-   nix-shell
+   nix develop
    ```
-
-> **Note**: Integration of Nix for development is currently in progress. More detailed instructions and relevant scripts will be added soon.
-
 
 ## 📖 Documentation
 
