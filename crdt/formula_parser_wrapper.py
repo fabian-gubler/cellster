@@ -1,4 +1,5 @@
-from formula_parser import parse, FormulaParseError
+from parser.formula_parser import parse, FormulaParseError
+
 
 class FormulaParserWrapper:
     def parse_formula(self, formula):

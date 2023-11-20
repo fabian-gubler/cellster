@@ -1,5 +1,5 @@
 # crdt_core.py
-from formula_parser_wrapper import FormulaParserWrapper
+from .formula_parser_wrapper import FormulaParserWrapper
 
 class CRDTCore:
     def __init__(self):
