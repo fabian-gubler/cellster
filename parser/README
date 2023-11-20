@@ -1,0 +1,39 @@
+A Python 2/3 parser for basic excel formulas
+============================================
+
+How to use it?
+--------------
+Call the `parse` function in `formula_parser.py` with the string containing the formula that you
+wish to parse. If it's successful then the function will return an AST object. If it's not then a
+`FormulaParseError` exception will be raised containing a somewhat-useful error message.
+
+What are the AST nodes?
+-----------------------
+* `Cell` with a string `col` field (uppercase) and an integer `row` field.
+  Cells are parsed according to
+  https://support.microsoft.com/en-us/office/overview-of-formulas-in-excel-ecfdc708-9162-49e8-b993-c311f47ca173,
+* `CellRange` has a Cell `start` field and a Cell `end` field,
+* `Name` has a string `name` field (uppercase),
+* `Function` has a string `func_name` field (uppercase) and an array of AST objects of all the
+  funciton's arguments,
+* `Number` has a float `value` field,
+* `Logical` has a boolean `value` field,
+* `Unary` represents a unary operation and has a string field `op` that can be either `+` or `-`,
+  and an AST node `expr` field,
+* `Binary` represents a bivary operation and has a string field `op`, an AST node `left` field, and
+  an AST node `right` field.
+  The operators and their precedence are parsed as specified in
+  https://support.microsoft.com/en-us/office/calculation-operators-and-precedence-in-excel-48be406d-4975-4d31-b2b8-7af9e0e2878a.
+
+Example
+-------
+Here's one long formula that contains all the kinds of nodes from earlier.
+
+>   -SUM(ABS(A1:A100)) + IF(true, INIT_VALUE, B12)*4
+
+Example Program
+---------------
+`example.py` is a simple Python3 that prompts you to write a formula in a REPL. If the formula
+parses correctly then a text representation of the AST is printed and then the set of all functions
+that are used in the formula. If the formula does not parse correctly then the parsing error is
+printed and the program quits.
