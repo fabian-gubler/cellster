@@ -1,4 +1,8 @@
+# Environment
 .direnv/
 .venv/
+
+# Cache files
 __pychache__/
+.pytest_cache/
 *.pyc 
