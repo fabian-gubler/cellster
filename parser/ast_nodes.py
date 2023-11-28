@@ -1,21 +1,24 @@
-
 import uuid
 import datetime
 
+
 class BaseNode:
     def __init__(self, node_content, user_id):
-        self.id = str(uuid.uuid4())
-        self.id_history = [self.id]
+        self.id_history = [str(uuid.uuid4())]
         self.node_content = node_content
         self.user_id = user_id
         self.timestamp = datetime.datetime.now()
 
+    def generate_new_id(self):
+        new_id = str(uuid.uuid4())
+        self.id_history.append(new_id)
+
     def update_content(self, new_content, user_id):
+        self.generate_new_id()
         self.node_content = new_content
         self.user_id = user_id
         self.timestamp = datetime.datetime.now()
 
-    # Add more common methods here
 
 class Cell(BaseNode):
     def __init__(self, col, row, user_id):
@@ -43,15 +46,18 @@ class Function(BaseNode):
         self.func_name = func_name
         self.arguments = arguments
 
+
 class Number(BaseNode):
     def __init__(self, value, user_id):
         super().__init__(f"Num[{value}]", user_id)
         self.value = value
 
+
 class Logical(BaseNode):
     def __init__(self, value, user_id):
         super().__init__(f"Bool[{value}]", user_id)
         self.value = value
+
 
 class Binary(BaseNode):
     def __init__(self, left, op, right, user_id):
@@ -59,6 +65,7 @@ class Binary(BaseNode):
         self.left = left
         self.op = op
         self.right = right
+
 
 class Unary(BaseNode):
     def __init__(self, op, expr, user_id):
