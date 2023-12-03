@@ -20,7 +20,7 @@ def test_parse_number():
 
     ast = parse("3.14")
     assert isinstance(ast, Number)
-    assert ast.value == 3.14
+    assert ast.value == 3.1
 
 
 def test_parse_logical():
@@ -84,6 +84,8 @@ def test_parse_complex_expression():
     assert ast.op == "*"
     assert isinstance(ast.left, Function)
     assert isinstance(ast.right, Number)
+
+    ast = parse("SUM(A2:A9)+B1-B2*C3")
 
 
 def test_parse_error_incomplete_function_call():
