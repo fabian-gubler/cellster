@@ -8,6 +8,8 @@ class BaseNode:
         self.node_content = node_content
         self.user_id = user_id
         self.timestamp = datetime.datetime.now()
+        self.parent = None
+        self.node_type = self.__class__.__name__
 
     def generate_new_id(self):
         new_id = str(uuid.uuid4())
@@ -18,6 +20,21 @@ class BaseNode:
         self.node_content = new_content
         self.user_id = user_id
         self.timestamp = datetime.datetime.now()
+
+    def compare_content(self, other):
+        if isinstance(other, self.__class__):
+            return self.node_content == other.node_content
+        return False
+
+
+class Function(BaseNode):
+    def __init__(self, func_name, arguments, user_id):
+        super().__init__(f"Func[{func_name}]", user_id)
+        self.func_name = func_name
+        self.arguments = arguments
+        for i, arg in enumerate(self.arguments):
+            arg.parent = self
+            arg.position = i
 
 
 class Cell(BaseNode):
@@ -38,13 +55,6 @@ class Name(BaseNode):
     def __init__(self, name, user_id):
         super().__init__(f"Name[{name}]", user_id)
         self.name = name
-
-
-class Function(BaseNode):
-    def __init__(self, func_name, arguments, user_id):
-        super().__init__(f"Func[{func_name}]", user_id)
-        self.func_name = func_name
-        self.arguments = arguments
 
 
 class Number(BaseNode):
