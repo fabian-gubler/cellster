@@ -1,7 +1,7 @@
 import pytest
 from parser.parser import parse
 from crdt.ast_comparison import compare_asts
-from crdt.apply_changes import apply_changes_to_ast
+from crdt.apply_changes import apply_changes_to_ast, StructuralChangeException
 
 
 ######################
@@ -73,19 +73,20 @@ def test_apply_deletions():
 # ROOT LEVEL
 ######################
 
-# def test_apply_additions():
-#     original_ast = parse("SUM(A1:A10)")
-#     modified_ast = parse("SUM(A1:A10) + 1")
-#     changes = compare_asts(original_ast, modified_ast)
-#     new_ast = apply_changes_to_ast(original_ast, changes)
-#     # assert whether exception is raised
-#     with pytest.raises(Exception):
-#         assert str(new_ast) == "SUM(A1:A10) + 1"
+def test_apply_root_additions():
+    original_ast = parse("SUM(A1:A10)")
+    modified_ast = parse("SUM(A1:A10) + 1")
+    changes = compare_asts(original_ast, modified_ast)
+    # assert whether exception is raised
+    with pytest.raises(StructuralChangeException):
+        new_ast = apply_changes_to_ast(original_ast, changes)
 
-# def test_apply_deletions():
-#     original_ast = parse("SUM(A1:A10) + 1")
-#     modified_ast = parse("SUM(A1:A10)")
-#     changes = compare_asts(original_ast, modified_ast)
-#     new_ast = apply_changes_to_ast(original_ast, changes)
-#     assert str(new_ast) == "SUM(A1:A10)"
-#
+    # assert str(new_ast) == "SUM(A1:A10 + 1)"
+
+def test_apply_root_deletions():
+    original_ast = parse("SUM(A1:A10) + 1")
+    modified_ast = parse("SUM(A1:A10)")
+    changes = compare_asts(original_ast, modified_ast)
+    with pytest.raises(StructuralChangeException):
+        new_ast = apply_changes_to_ast(original_ast, changes)
+    # assert str(new_ast) == "SUM(A1:A10)"
