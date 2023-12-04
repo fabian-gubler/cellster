@@ -49,7 +49,7 @@ def test_root_level_modification():
     modified_ast = parse("AVERAGE(A1:A10)")
     changes = compare_asts(original_ast, modified_ast)
     assert len(changes) == 1
-    assert changes[0]['type'] == 'modification'
+    assert changes[0]['type'] == 'root_modification'
 
 
 # Test for root-level addition (adding a unary operation)
