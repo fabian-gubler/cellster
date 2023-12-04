@@ -1,6 +1,6 @@
 import pytest
 from parser.parser import parse
-from parser.tree_operations import find_node, replace_node, edit_node
+from parser.tree_operations import delete_node, find_node, replace_node, edit_node, add_node, delete_node
 from parser.ast_nodes import Cell, Function, Number
 
 
@@ -9,6 +9,15 @@ def construct_test_ast():
     # Example formula: SUM(A1, 5)
     ast = parse("SUM(A1, 5)")
     return ast
+
+
+def test_add_node_to_function():
+    parent_function = Function("SUM", [], "user1")
+    new_node = Number(5, "user1")
+    add_node(parent_function, new_node)
+
+    assert new_node in parent_function.arguments
+    assert new_node.parent == parent_function
 
 
 def test_find_node():
@@ -58,3 +67,21 @@ def test_replace_node():
     assert replaced_node.col == "C"
     assert replaced_node.row == 3
     assert replaced_node.user_id == "test_user"
+
+def test_delete_node():
+    ast = construct_test_ast()
+    a1_id_history = ast.arguments[0].id_history
+
+    # Delete the "A1" node
+    delete_result = delete_node(ast, a1_id_history)
+    # print(f"Delete result: {delete_result}")
+
+    # Check if the deletion was successful
+    assert delete_result
+
+    # Find the deleted node in the AST using the id_history
+    deleted_node = find_node(ast, a1_id_history)
+
+    # Check if the node is deleted
+    assert deleted_node is None
+
