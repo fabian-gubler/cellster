@@ -10,6 +10,8 @@ from parser.tree_operations import (
 
 from parser.ast_nodes import BaseNode, Function, Binary, Unary
 
+from copy import deepcopy
+
 
 class StructuralChangeException(Exception):
     pass
@@ -18,8 +20,9 @@ class StructuralChangeException(Exception):
 def apply_changes_to_ast(original_ast, changes):
     for change in changes:
         if change["type"] == "modification":
-            # Find and replace the modified node
             original_node = find_node(original_ast, change["original"].id_history)
+            if original_node is None:
+                continue
             replace_node(original_ast, original_node.id_history, change["modified"])
 
         elif change["type"] == "addition":
@@ -29,12 +32,15 @@ def apply_changes_to_ast(original_ast, changes):
             add_node(parent_node, change["node"], child_side=change["child_side"])
 
         elif change["type"] == "deletion":
-            # Logic to remove a node from the AST
-            # This uses delete_node() from tree_operations.py
             parent, child_to_delete = find_parent_and_child(
                 original_ast, change["node"].id_history
             )
-            delete_node(parent, child_to_delete.id_history)
+            if parent and child_to_delete:
+                delete_node(parent, child_to_delete.id_history)
+
+        elif change["type"] == "root_modification":
+            # Replace the original AST's root with the modified root
+            original_ast = deepcopy(change["modified"])
 
         elif change["type"] == "root_change":
             # currently not supported
