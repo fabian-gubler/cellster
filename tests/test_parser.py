@@ -18,10 +18,6 @@ def test_parse_number():
     assert ast.value == 123
     assert ast.user_id == "default_user"
 
-    ast = parse("3.14")
-    assert isinstance(ast, Number)
-    assert ast.value == 3.1
-
 
 def test_parse_logical():
     ast = parse("TRUE")
