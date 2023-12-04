@@ -1,7 +1,6 @@
 from parser.ast_nodes import Function, Unary, Binary
 from itertools import zip_longest
 
-
 def compare_asts(original_node, modified_node):
     changes = []
 
@@ -16,12 +15,11 @@ def compare_asts(original_node, modified_node):
                 traverse_and_compare(node1, get_child(node2))
             return
 
-        if not node1.compare_content(node2):
-            # Content modification detected
-            change_type = "modification"
-            if node1.parent is None:  # if this is the root node
-                change_type = "modification"
+        # Handling root level modifications where the type remains the same but the content changes
+        if node1.node_type == node2.node_type and not node1.compare_content(node2):
+            change_type = "root_modification" if node1.parent is None else "modification"
             changes.append({"type": change_type, "original": node1, "modified": node2})
+
         if isinstance(node1, (Function, Binary, Unary)):
             compare_children(get_children(node1), get_children(node2), node1, node2)
 
@@ -35,11 +33,9 @@ def compare_asts(original_node, modified_node):
                 changes.append({
                     "type": change_type,
                     "node": child2 if child1 is None else child1,
-                    # parent_id history must be from the original node
                     "parent_id_history": parent1.id_history,
-                    "child_side": child_side  # New field
+                    "child_side": child_side
                 })
-                # print(f"Detected change: {changes[-1]}")  # Print the last change detected
             else:
                 traverse_and_compare(child1, child2)
 
