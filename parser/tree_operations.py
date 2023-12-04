@@ -32,6 +32,25 @@ def find_node(root, target_history):
     return None
 
 
+def add_node(parent, new_node, position=None, child_side=None):
+    if isinstance(parent, Function):
+        if position is not None:
+            parent.arguments.insert(position, new_node)
+        else:
+            parent.arguments.append(new_node)
+
+    elif isinstance(parent, Binary):
+        if child_side == "left":
+            parent.left = new_node
+        elif child_side == "right":
+            parent.right = new_node
+
+    elif isinstance(parent, Unary):
+        parent.expr = new_node
+
+    new_node.parent = parent
+
+
 def find_parent_and_child(root, child_history, parent=None):
     if isinstance(root, BaseNode):
         if root.id_history == child_history:
@@ -87,5 +106,21 @@ def replace_node(root, target_history, new_node):
             if parent.expr is child_to_replace:
                 parent.expr = new_node
         new_node.id_history = child_to_replace.id_history + [str(uuid.uuid4())]
+        return True
+    return False
+
+def delete_node(root, target_history):
+    parent, child_to_delete = find_parent_and_child(root, target_history)
+    if parent and child_to_delete:
+        if isinstance(parent, Function):
+            parent.arguments.remove(child_to_delete)
+        elif isinstance(parent, Binary):
+            if parent.left is child_to_delete:
+                parent.left = None
+            elif parent.right is child_to_delete:
+                parent.right = None
+        elif isinstance(parent, Unary):
+            if parent.expr is child_to_delete:
+                parent.expr = None
         return True
     return False
