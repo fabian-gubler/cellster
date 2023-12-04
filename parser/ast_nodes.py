@@ -21,11 +21,6 @@ class BaseNode:
         self.user_id = user_id
         self.timestamp = datetime.datetime.now()
 
-    def compare_content(self, other):
-        if isinstance(other, self.__class__):
-            return self.node_content == other.node_content
-        return False
-
 
 class Function(BaseNode):
     def __init__(self, func_name, arguments, user_id):
@@ -36,12 +31,25 @@ class Function(BaseNode):
             arg.parent = self
             arg.position = i
 
+    def compare_content(self, other_node):
+        if self.func_name != other_node.func_name or len(self.arguments) != len(
+            other_node.arguments
+        ):
+            return False
+        return all(
+            arg.compare_content(other_arg)
+            for arg, other_arg in zip(self.arguments, other_node.arguments)
+        )
+
 
 class Cell(BaseNode):
     def __init__(self, col, row, user_id):
         super().__init__(f"Cell[{col}{row}]", user_id)
         self.col = col
         self.row = row
+
+    def compare_content(self, other_node):
+        return self.col == other_node.col and self.row == other_node.row
 
 
 class CellRange(BaseNode):
@@ -50,11 +58,19 @@ class CellRange(BaseNode):
         self.start = start
         self.end = end
 
+    def compare_content(self, other_node):
+        return self.start.compare_content(
+            other_node.start
+        ) and self.end.compare_content(other_node.end)
+
 
 class Name(BaseNode):
     def __init__(self, name, user_id):
         super().__init__(f"Name[{name}]", user_id)
         self.name = name
+
+    def compare_content(self, other_node):
+        return self.name == other_node.name
 
 
 class Number(BaseNode):
@@ -62,11 +78,17 @@ class Number(BaseNode):
         super().__init__(f"Num[{value}]", user_id)
         self.value = value
 
+    def compare_content(self, other_node):
+        return self.value == other_node.value
+
 
 class Logical(BaseNode):
     def __init__(self, value, user_id):
         super().__init__(f"Bool[{value}]", user_id)
         self.value = value
+
+    def compare_content(self, other_node):
+        return self.value == other_node.value
 
 
 class Binary(BaseNode):
@@ -76,9 +98,19 @@ class Binary(BaseNode):
         self.op = op
         self.right = right
 
+    def compare_content(self, other_node):
+        return (
+            self.op == other_node.op
+            and self.left.compare_content(other_node.left)
+            and self.right.compare_content(other_node.right)
+        )
+
 
 class Unary(BaseNode):
     def __init__(self, op, expr, user_id):
         super().__init__(f"Unary[{op}]", user_id)
         self.op = op
         self.expr = expr
+
+    def compare_content(self, other_node):
+        return self.op == other_node.op and self.expr.compare_content(other_node.expr)
