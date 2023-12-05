@@ -15,11 +15,14 @@ class BaseNode:
         new_id = str(uuid.uuid4())
         self.id_history.append(new_id)
 
-    def update_content(self, new_content, user_id):
+    def refresh_node(self, user_id):
         self.generate_new_id()
-        self.node_content = new_content
-        self.user_id = user_id
         self.timestamp = datetime.datetime.now()
+        self.user_id = user_id
+
+    def tie_breaker_value(self):
+        # Value is a combination of content and user ID
+        return hash((self.node_content, self.user_id))
 
 
 class Function(BaseNode):
@@ -36,7 +39,7 @@ class Function(BaseNode):
         return f"{self.func_name}({', '.join(arg_strs)})"
 
     def compare_content(self, other_node):
-        return self.func_name == other_node.func_name 
+        return self.func_name == other_node.func_name
 
 
 class Cell(BaseNode):
@@ -127,6 +130,4 @@ class Unary(BaseNode):
         return f"{self.op}{str(self.expr)}"
 
     def compare_content(self, other_node):
-        return self.op == other_node.op 
-
-
+        return self.op == other_node.op
