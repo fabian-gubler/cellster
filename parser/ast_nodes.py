@@ -36,11 +36,7 @@ class Function(BaseNode):
         return f"{self.func_name}({', '.join(arg_strs)})"
 
     def compare_content(self, other_node):
-        if not isinstance(other_node, Function):
-            return False
-        return self.func_name == other_node.func_name and len(self.arguments) == len(
-            other_node.arguments
-        )
+        return self.func_name == other_node.func_name 
 
 
 class Cell(BaseNode):
@@ -115,16 +111,10 @@ class Binary(BaseNode):
         self.right = right
 
     def __str__(self):
-        return f"({str(self.left)} {self.op} {str(self.right)})"
+        return f"{str(self.left)} {self.op} {str(self.right)}"
 
     def compare_content(self, other_node):
-        if not isinstance(other_node, Binary):
-            return False
-        return (
-            self.op == other_node.op
-            and self.left.compare_content(other_node.left)
-            and self.right.compare_content(other_node.right)
-        )
+        return self.op == other_node.op
 
 
 class Unary(BaseNode):
@@ -134,7 +124,9 @@ class Unary(BaseNode):
         self.expr = expr
 
     def __str__(self):
-        return f"({self.op}{str(self.expr)})"
+        return f"{self.op}{str(self.expr)}"
 
     def compare_content(self, other_node):
-        return self.op == other_node.op and self.expr.compare_content(other_node.expr)
+        return self.op == other_node.op 
+
+
