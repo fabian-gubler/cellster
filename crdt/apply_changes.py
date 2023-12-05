@@ -1,11 +1,3 @@
-from parser.tree_operations import (
-    delete_node,
-    find_node,
-    find_parent_and_child,
-    add_node,
-    delete_node,
-)
-
 from parser.ast_nodes import (
     Cell,
     CellRange,
@@ -75,3 +67,34 @@ def replace_node(node_to_change, changed_node, user_id):
 
             updated_node={"node": node_to_change, "type": "modification"}
             return updated_node
+
+
+def find_node(root, target_history):
+    def id_history_matches(node_history, target_history):
+        # Function to check if any part of target_history matches with node_history
+        for i in range(1, len(target_history) + 1):
+            if node_history[:i] == target_history[:i]:
+                return True
+        return False
+
+    if id_history_matches(root.id_history, target_history):
+        return root
+
+    # Recursive search in composite nodes
+    if isinstance(root, Function):
+        for arg in root.arguments:
+            result = find_node(arg, target_history)
+            if result:
+                return result
+
+    if isinstance(root, Binary):
+        left_result = find_node(root.left, target_history)
+        if left_result:
+            return left_result
+
+        right_result = find_node(root.right, target_history)
+        if right_result:
+            return right_result
+
+    if isinstance(root, Unary):
+        return find_node(root.expr, target_history)

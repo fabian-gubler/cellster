@@ -1,11 +1,5 @@
-from parser.tree_operations import (
-    find_node,
-    find_parent_and_child,
-    add_node,
-    delete_node,
-)
 from parser.ast_nodes import CellRange, Cell
-from crdt.apply_changes import replace_node
+from crdt.apply_changes import replace_node, find_node
 
 
 class NodeNotFoundError(Exception):
