@@ -25,7 +25,7 @@ class StructuralChangeException(Exception):
     pass
 
 
-def apply_changes_to_ast(original_ast, changes):
+def apply_changes_to_ast(original_ast, changes, user_id):
     updated_nodes = []
     for change in changes:
         # print("Change detected:", change)  # Debugging statement
@@ -35,7 +35,7 @@ def apply_changes_to_ast(original_ast, changes):
             if node_to_change is None:
                 raise StructuralChangeException("Node not found in original AST")
 
-            updated_node = replace_node(node_to_change, change["modification"])
+            updated_node = replace_node(node_to_change, change["modification"], user_id)
 
             updated_nodes.append(updated_node)
 
@@ -44,29 +44,31 @@ def apply_changes_to_ast(original_ast, changes):
 
     return original_ast, updated_nodes
 
-def replace_node(node_to_change, changed_node):
+def replace_node(node_to_change, changed_node, user_id):
 
             if isinstance(node_to_change, Binary):
                 node_to_change.op = changed_node.op
-                node_to_change.generate_new_id()
+                node_to_change.refresh_node(user_id)
 
             elif isinstance(node_to_change, CellRange):
                 node_to_change.start = changed_node.start
                 node_to_change.end = changed_node.end
-                node_to_change.generate_new_id()
+                node_to_change.refresh_node(user_id)
 
             elif isinstance(node_to_change, Function):
                 node_to_change.func_name = changed_node.func_name
-                node_to_change.generate_new_id()
+                node_to_change.refresh_node(user_id)
 
             elif isinstance(node_to_change, Unary):
                 node_to_change.op = changed_node.op
-                node_to_change.generate_new_id()
+                node_to_change.refresh_node(user_id)
 
             elif isinstance(node_to_change, Cell):
                 node_to_change.col = changed_node.col
                 node_to_change.row = changed_node.row
-                node_to_change.generate_new_id()
+                node_to_change.refresh_node(user_id)
+
+            # TODO: Add other node types
 
             else:
                 raise StructuralChangeException(type(node_to_change))
