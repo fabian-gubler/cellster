@@ -1,9 +1,16 @@
-from parser.tree_operations import find_node, find_parent_and_child, add_node, delete_node
+from parser.tree_operations import (
+    find_node,
+    find_parent_and_child,
+    add_node,
+    delete_node,
+)
 from parser.ast_nodes import CellRange, Cell
 from crdt.apply_changes import replace_node
 
+
 class NodeNotFoundError(Exception):
     pass
+
 
 def merge_ast(original_ast, changes):
     def calculate_depth(original_history, updated_history):
@@ -22,8 +29,8 @@ def merge_ast(original_ast, changes):
     for change in changes:
         # Handle modifications
 
-        if change['type'] == 'modification':
-            modified_node = change['node']
+        if change["type"] == "modification":
+            modified_node = change["node"]
             original_node = find_node(original_ast, modified_node.id_history)
 
             # print("Modified node ID history: ", modified_node.id_history)
@@ -33,17 +40,24 @@ def merge_ast(original_ast, changes):
                 raise NodeNotFoundError("Node not found in original AST")
 
             # Enhanced conflict resolution for CellRange nodes
-            if isinstance(original_node, CellRange) and isinstance(modified_node, CellRange):
+            if isinstance(original_node, CellRange) and isinstance(
+                modified_node, CellRange
+            ):
                 merged_range = merge_cell_ranges(original_node, modified_node)
-                replace_node(original_node, merged_range)
-
+                replace_node(original_node, merged_range, user_id="merged")
 
             depth = calculate_depth(original_node.id_history, modified_node.id_history)
 
             if depth > 0:
-                replace_node(original_node, modified_node)
+                replace_node(original_node, modified_node, user_id="merged")
             elif depth == 0:
-                conflict_resolution(original_node, modified_node)  # Placeholder for conflict resolution logic
+                raise Exception("Invalid change")
+                winner = conflict_resolution(
+                    original_node, modified_node
+                )  # Placeholder for conflict resolution logic
+
+                if winner == modified_node:
+                    replace_node(original_node, modified_node, user_id="merged")
 
         # # Handle additions
         # elif change['type'] == 'addition':
@@ -55,8 +69,8 @@ def merge_ast(original_ast, changes):
         #     parent, child_to_delete = find_parent_and_child(original_ast, change["node"].id_history)
         #     if parent and child_to_delete:
         #         delete_node(parent, child_to_delete.id_history)
-        
-        else: 
+
+        else:
             raise Exception("Invalid change type")
 
     return original_ast
@@ -66,11 +80,17 @@ def merge_cell_ranges(node1, node2):
     print("Merging:", node1, "with", node2)  # Debug input CellRanges
     start_row = min(node1.start.row, node2.start.row)
     end_row = max(node1.end.row, node2.end.row)
-    start_col = min(node1.start.col, node2.start.col, key=lambda x: col_name_to_number(x))
+    start_col = min(
+        node1.start.col, node2.start.col, key=lambda x: col_name_to_number(x)
+    )
     end_col = max(node1.end.col, node2.end.col, key=lambda x: col_name_to_number(x))
 
     # Creating the merged range
-    merged_range = CellRange(Cell(start_col, start_row, user_id="merged"), Cell(end_col, end_row, user_id="merged"), user_id="merged")
+    merged_range = CellRange(
+        Cell(start_col, start_row, user_id="merged"),
+        Cell(end_col, end_row, user_id="merged"),
+        user_id="merged",
+    )
 
     print("Merged range:", merged_range)  # Debug output
 
@@ -78,13 +98,23 @@ def merge_cell_ranges(node1, node2):
 
 
 def col_name_to_number(col):
-  """Converts an Excel column name to a number (e.g., 'A' -> 1, 'Z' -> 26, 'AA' -> 27)."""
-  number = 0
-  for char in col:
-      number = number * 26 + (ord(char.upper()) - ord('A') + 1)
-  return number
+    number = 0
+    for char in col:
+        number = number * 26 + (ord(char.upper()) - ord("A") + 1)
+    return number
+
 
 def conflict_resolution(original_node, updated_node):
     # Placeholder function for conflict resolution
     # Implement conflict resolution logic here
-    raise NotImplementedError
+
+    # compare timestamps
+
+    if original_node.timestamp > updated_node.timestamp:
+        # original_node commited later
+        return updated_node
+    elif original_node.timestamp < updated_node.timestamp:
+        # updated_node is more recent
+        return original_node
+    else:
+        pass
