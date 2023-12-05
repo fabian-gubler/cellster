@@ -65,9 +65,11 @@ def process_and_merge_asts(
         print("User 2 Changes:")
         print_detected_changes(user2_changes)
 
+    # Proceed with the following steps once connection has been established ...
+
     # Apply changes
-    user1_new_ast, user1_new_nodes = apply_changes_to_ast(user1_original_ast, user1_changes)
-    user2_new_ast, user2_new_nodes = apply_changes_to_ast(user2_original_ast, user2_changes)
+    user1_new_ast, user1_new_nodes = apply_changes_to_ast(user1_original_ast, user1_changes, user_id="user_1")
+    user2_new_ast, user2_new_nodes = apply_changes_to_ast(user2_original_ast, user2_changes, user_id="user_2")
 
     if debug_new_asts:
         print("")
