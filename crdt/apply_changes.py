@@ -18,18 +18,39 @@ class StructuralChangeException(Exception):
 
 
 def apply_changes_to_ast(original_ast, changes):
+    updated_nodes = []
     for change in changes:
         if change["type"] == "modification":
+            print("change: ", change)
+            modified_node = change["modification"]
             original_node = find_node(original_ast, change["original"].id_history)
+
             if original_node is None:
-                continue
-            replace_node(original_ast, original_node.id_history, change["modified"])
+                raise StructuralChangeException("Node not found in original AST")
+
+            new_node = replace_node(
+                original_ast, original_node.id_history, change["modification"]
+            )
+
+            # print("Original node ID history: ", original_node.id_history)
+            # print(
+            #     f"Applied change: {change["type"]}, Updated id_history: {change["modification"].id_history}"
+            # )
+
+            if new_node:
+                updated_nodes.append(new_node)
 
         elif change["type"] == "addition":
             # Logic to add a node to the AST
             # This uses add_node() from tree_operations.py
             parent_node = find_node(original_ast, change["parent_id_history"])
-            add_node(parent_node, change["node"], child_side=change["child_side"])
+            if parent_node:
+                new_node = add_node(parent_node, change["node"], child_side=change["child_side"])
+            else:
+                raise StructuralChangeException("Parent node not found")
+
+            if new_node:
+                updated_nodes.append(new_node)
 
         elif change["type"] == "deletion":
             parent, child_to_delete = find_parent_and_child(
@@ -37,36 +58,24 @@ def apply_changes_to_ast(original_ast, changes):
             )
             if parent and child_to_delete:
                 delete_node(parent, child_to_delete.id_history)
+            else:
+                raise StructuralChangeException("Parent node not found")
 
         elif change["type"] == "root_modification":
             # Replace the original AST's root with the modified root
-            original_ast = deepcopy(change["modified"])
+            modified_node = deepcopy(change["original"])
+
+            new_node = replace_node(
+                original_ast, original_node.id_history, change["modification"]
+            )
+
+            new_node = {'node': modified_node, 'type': 'addition'}
+
+            if new_node:
+                updated_nodes.append(new_node)
 
         elif change["type"] == "root_change":
             # currently not supported
             raise StructuralChangeException("Root change detected")
 
-    return original_ast
-
-
-def apply_addition(ast, change):
-    # Assuming change['node'] is the node to be added
-    # and change['parent_id'] identifies where to add it
-    parent_node = find_node(ast, change["parent_id"])
-    if parent_node:
-        # Logic to insert the new node into the parent's children
-        # This will vary based on the type of the parent node
-        if isinstance(parent_node, Function):
-            parent_node.arguments.append(change["node"])
-        # Add similar logic for other composite node types if necessary
-        # Update parent-child relationship
-        change["node"].parent = parent_node
-
-
-def apply_deletion(ast, change):
-    parent, child_to_delete = find_parent_and_child(ast, change["node"].id_history)
-    if parent and child_to_delete:
-        # Remove the child from the parent's children
-        if isinstance(parent, Function):
-            parent.arguments.remove(child_to_delete)
-        # Add similar logic for other composite node types if necessary
+    return original_ast, updated_nodes

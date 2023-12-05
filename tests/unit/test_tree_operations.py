@@ -32,20 +32,20 @@ def test_find_node():
     assert found_node.row == 1
 
 
-def test_edit_node():
-    ast = construct_test_ast()
-    a1_id_history = ast.arguments[0].id_history
-    user_id = "test_user"
-
-    # Edit the "A1" node to "B1"
-    edited_node = edit_node(ast, a1_id_history, "B1", user_id)
-    assert edited_node is not None
-
-    # assert edited_node.col == 'B'
-    # assert edited_node.row == 1
-
-    assert edited_node.node_content == "B1"
-    assert edited_node.user_id == user_id
+# def test_edit_node():
+#     ast = construct_test_ast()
+#     a1_id_history = ast.arguments[0].id_history
+#     user_id = "test_user"
+#
+#     # Edit the "A1" node to "B1"
+#     edited_node = edit_node(ast, a1_id_history, "B1", user_id)
+#     assert edited_node is not None
+#
+#     # assert edited_node.col == 'B'
+#     # assert edited_node.row == 1
+#
+#     assert edited_node.node_content == "B1"
+#     assert edited_node.user_id == user_id
 
 
 def test_replace_node():

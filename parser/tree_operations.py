@@ -49,6 +49,7 @@ def add_node(parent, new_node, position=None, child_side=None):
         parent.expr = new_node
 
     new_node.parent = parent
+    return {'node': new_node, 'type': 'addition'}
 
 
 def find_parent_and_child(root, child_history, parent=None):
@@ -106,7 +107,7 @@ def replace_node(root, target_history, new_node):
             if parent.expr is child_to_replace:
                 parent.expr = new_node
         new_node.id_history = child_to_replace.id_history + [str(uuid.uuid4())]
-        return True
+        return {'node': new_node, 'type': 'modification'}
     return False
 
 def delete_node(root, target_history):

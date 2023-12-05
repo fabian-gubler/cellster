@@ -2,19 +2,130 @@ import pytest
 from tests.integration.test_utils import process_and_merge_asts
 
 
-def test_equal_asts():
+def test_one_user_change():
+
+    original_ast = "SUM(A1:A10)"
+    user1_ast_str = "SUM(A1:A10)"
+    user2_ast_str = "SUM(A2:A9)"
+
+    expected_output = "SUM(A2:A9)"
+
     user1_merged_ast_str, user2_merged_ast_str = process_and_merge_asts(
-        "SUM(A1:A10)",
-        "SUM(A1:A10)",
-        "SUM(A1:A10)",
-        debug_changes=True,
-        debug_new_asts=True,
-        debug_merged_asts=True,
+        original_ast,
+        user1_ast_str,
+        user2_ast_str,
+        debug_changes=False,
+        debug_new_asts=False,
+        debug_merged_asts=False,
+        debug_all=True,
     )
 
-    assert user1_merged_ast_str == "SUM(A1:A10)"
-    assert user2_merged_ast_str == "SUM(A1:A10)"
+    assert user1_merged_ast_str == expected_output
+    assert user2_merged_ast_str == expected_output
 
+# def test_structural_changes():
+#
+#     original_ast = "SUM(A1:A10)"
+#     user1_ast_str = "AVERAGE(A1:A10)"
+#     user2_ast_str = "SUM(A1:A10)"
+#
+#     expected_output = "AVERAGE(A1:A10)"
+#
+#     user1_merged_ast_str, user2_merged_ast_str = process_and_merge_asts(
+#         original_ast,
+#         user1_ast_str,
+#         user2_ast_str,
+#         debug_changes=False,
+#         debug_new_asts=False,
+#         debug_merged_asts=False,
+#         debug_all=True,
+#     )
+#
+#     assert user1_merged_ast_str == expected_output
+#     assert user2_merged_ast_str == expected_output
+
+# def test_non_conflicting_modifications():
+#     original_ast = "SUM(A1:A10) + AVERAGE(B1:B10)"
+#     user1_ast_str = "SUM(A1:A9) + AVERAGE(B1:B10)"
+#     user2_ast_str = "SUM(A1:A10) + AVERAGE(B2:B10)"
+#
+#     expected_output = "(SUM(A1:A9) + AVERAGE(B2:B10))"
+#
+#     user1_merged_ast_str, user2_merged_ast_str = process_and_merge_asts(
+#         original_ast,
+#         user1_ast_str,
+#         user2_ast_str,
+#         debug_changes=False,
+#         debug_new_asts=False,
+#         debug_merged_asts=False,
+#     )
+#
+#     assert user1_merged_ast_str == expected_output
+#     assert user2_merged_ast_str == expected_output
+
+# def test_apply_additions():
+#
+#     original_ast = "SUM(A1:A10)"
+#     user1_ast_str = "SUM(A1:A10, 5)"
+#     user2_ast_str = "SUM(A1:A10)"
+#
+#     expected_output = "SUM(A1:A10, 5)"
+#
+#     user1_merged_ast_str, user2_merged_ast_str = process_and_merge_asts(
+#         original_ast,
+#         user1_ast_str,
+#         user2_ast_str,
+#         debug_changes=False,
+#         debug_new_asts=False,
+#         debug_merged_asts=False,
+#         debug_all=True,
+#     )
+#
+#     assert user1_merged_ast_str == expected_output
+#     assert user2_merged_ast_str == expected_output
+
+
+# def test_apply_deletions():
+#     original_ast = "SUM(A1:A10, 5)"
+#     user1_ast_str = "SUM(A1:A10, 5)"
+#     user2_ast_str = "SUM(A1:A10)"
+#
+#     expected_output = "SUM(A1:A10)"
+#
+#     user1_merged_ast_str, user2_merged_ast_str = process_and_merge_asts(
+#         original_ast,
+#         user1_ast_str,
+#         user2_ast_str,
+#         debug_changes=False,
+#         debug_new_asts=False,
+#         debug_merged_asts=False,
+#     )
+#
+#     assert user1_merged_ast_str == expected_output
+#     assert user2_merged_ast_str == expected_output
+
+# def test_apply_complex_modifications():
+#     original_ast = parse("SUM(A1:A10, 5)")
+#     modified_ast = parse("SUM(A2:A9, 6)")
+#     changes = compare_asts(original_ast, modified_ast)
+#     new_ast = apply_changes_to_ast(original_ast, changes)
+#     assert str(new_ast) == "SUM(A2:A9, 6)"
+#
+#
+# def test_nested_modification():
+#     original_ast = parse("SUM(AVERAGE(A1:A5), A10)")
+#     modified_ast = parse("SUM(AVERAGE(A1:A6), A10)")
+#     changes = compare_asts(original_ast, modified_ast)
+#     new_ast = apply_changes_to_ast(original_ast, changes)
+#     assert str(new_ast) == "SUM(AVERAGE(A1:A6), A10)"
+#
+#
+# def test_apply_structural_changes():
+#     original_ast = parse("SUM(A1:A10)")
+#     modified_ast = parse("AVERAGE(A1:A10)")
+#     changes = compare_asts(original_ast, modified_ast)
+#     new_ast = apply_changes_to_ast(original_ast, changes)
+#     assert str(new_ast) == "AVERAGE(A1:A10)"
 
 # def test_conflicting_modifications():
 #     original_ast = parse("SUM(A1:A10)")
@@ -36,19 +147,6 @@ def test_equal_asts():
 #     # Assert based on the conflict resolution strategy implemented
 #
 #
-# def test_non_conflicting_modifications():
-#     original_ast = parse("SUM(A1:A10) + AVERAGE(B1:B10)")
-#     user1_ast = parse("SUM(A1:A9) + AVERAGE(B1:B10)")
-#     user2_ast = parse("SUM(A1:A10) + AVERAGE(B2:B10)")
-#
-#     user1_changes = compare_asts(original_ast, user1_ast)
-#     user2_changes = compare_asts(original_ast, user2_ast)
-#
-#     merged_changes = merge_changes(user1_changes, user2_changes)
-#     merged_ast = apply_changes_to_ast(original_ast, merged_changes)
-#
-#     print("merged_ast: ", merged_ast)
-#     assert str(merged_ast) == "(SUM(A1:A9) + AVERAGE(B2:B10))"
 
 
 # def test_non_conflicting_changes_outer():
@@ -66,8 +164,8 @@ def test_equal_asts():
 #     merged_ast = apply_changes_to_ast(original_ast, merged_changes)
 #
 #     assert str(merged_ast) == "SUM(A1:A10, 5)"  # Combined changes from both users
-
-
+#
+#
 #
 # def test_mixed_changes():
 #     original_ast = parse("SUM(A1:A10)")

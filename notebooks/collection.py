@@ -1,3 +1,8 @@
+# A colleague of mine has a similar project, but follows a rule-based approach. This could be especially interesting when both users have changed their cell range. I want to extend our merge.py program to follow a rules-based approach, if there is a fitting rule. These are the rules from my colleague: 
+
+
+
+
 # Rule 5: Different Cell References - If the cell reference of  the letters of both users varies take both references and combine them.
 user1_formula_5a = "SUM(A1:A5, B1:B5)" # Input 1
 user2_formula_5a = "SUM(C1:C5)" # Input 2

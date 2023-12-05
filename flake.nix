@@ -41,6 +41,7 @@
             pkgs.black
             pythonPackages.flake8
             pythonPackages.isort
+			pythonPackages.nbconvert
             pkgs.nodePackages.pyright
 
 
