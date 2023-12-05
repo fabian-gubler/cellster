@@ -5,9 +5,14 @@ from parser.ast_nodes import BaseNode, Function, Binary, Unary
 
 
 def find_node(root, target_history):
-    # Check for the longest common prefix in the history
-    common_length = min(len(root.id_history), len(target_history))
-    if root.id_history[:common_length] == target_history[:common_length]:
+    def id_history_matches(node_history, target_history):
+        # Function to check if any part of target_history matches with node_history
+        for i in range(1, len(target_history) + 1):
+            if node_history[:i] == target_history[:i]:
+                return True
+        return False
+
+    if id_history_matches(root.id_history, target_history):
         return root
 
     # Recursive search in composite nodes
@@ -28,6 +33,8 @@ def find_node(root, target_history):
 
     if isinstance(root, Unary):
         return find_node(root.expr, target_history)
+
+    # Extend this logic to other composite node types if necessary
 
     return None
 
@@ -62,44 +69,13 @@ from copy import deepcopy
 
 
 def replace_node(root, target_history, new_node):
-    parent, child_to_replace = find_parent_and_child(root, target_history)
 
-    if parent is None and child_to_replace is root:
-        # Handle the root node replacement
-        if isinstance(root, Function) and isinstance(new_node, Function):
-            # Preserve unchanged children for Function nodes
-            new_node.arguments = [
-                child if child.compare_content(new_arg) else new_arg
-                for child, new_arg in zip_longest(root.arguments, new_node.arguments)
-            ]
-        elif isinstance(root, Binary) and isinstance(new_node, Binary):
-            # Preserve unchanged children for Binary nodes
-            new_node.left = root.left if root.left.compare_content(new_node.left) else new_node.left
-            new_node.right = root.right if root.right.compare_content(new_node.right) else new_node.right
-        elif isinstance(root, Unary) and isinstance(new_node, Unary):
-            # Preserve unchanged child for Unary node
-            new_node.expr = root.expr if root.expr.compare_content(new_node.expr) else new_node.expr
-        new_node.id_history = root.id_history + [str(uuid.uuid4())]
+    node_to_edit = find_node(root, target_history)
 
-        return {'node': new_node, 'type': 'modification'}
+    if isinstance(node_to_edit, Binary):
+        node_to_edit.op = new_node.op
 
-    if parent and child_to_replace:
-        if isinstance(parent, Function):
-            parent.arguments = [
-                new_node if child is child_to_replace else child
-                for child in parent.arguments
-            ]
-        elif isinstance(parent, Binary):
-            if parent.left is child_to_replace:
-                parent.left = new_node
-            elif parent.right is child_to_replace:
-                parent.right = new_node
-        elif isinstance(parent, Unary):
-            if parent.expr is child_to_replace:
-                parent.expr = new_node
-        new_node.id_history = child_to_replace.id_history + [str(uuid.uuid4())]
-
-        return {'node': new_node, 'type': 'modification'}
+    node_to_edit.id_history += [str(uuid.uuid4())]
 
     return False
 
