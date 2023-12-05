@@ -70,13 +70,6 @@ class CellRange(BaseNode):
             other_node.start
         ) and self.end.compare_content(other_node.end)
 
-    def expand_cell_range(self):
-        expanded_cells = []
-        for col in range(ord(self.start.col), ord(self.end.col) + 1):
-            for row in range(self.start.row, self.end.row + 1):
-                expanded_cells.append(Cell(chr(col), row, self.user_id))
-        return expanded_cells
-
 
 class Name(BaseNode):
     def __init__(self, name, user_id):
