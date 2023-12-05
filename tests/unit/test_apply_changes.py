@@ -2,6 +2,7 @@ import pytest
 from parser.parser import parse
 from crdt.ast_comparison import compare_asts
 from crdt.apply_changes import apply_changes_to_ast, StructuralChangeException
+from tests.integration.test_utils import print_detected_changes
 
 
 ######################
@@ -32,16 +33,36 @@ def test_nested_modification():
     new_ast, new_nodes = apply_changes_to_ast(original_ast, changes)
     assert str(new_ast) == "SUM(AVERAGE(A1:A6), A10)"
 
-
-def test_apply_structural_changes():
-    original_ast = parse("SUM(A1:A10)")
-    modified_ast = parse("AVERAGE(A1:A10)")
+def test_binary_operator_modification():
+    original_ast = parse("A1 + A2")
+    modified_ast = parse("A1 - A2")
     changes = compare_asts(original_ast, modified_ast)
-    # print("Changes: ", changes)
+    print_detected_changes(changes)
     new_ast, new_nodes = apply_changes_to_ast(original_ast, changes)
-    # print("New AST: ", new_ast)
-    assert str(new_ast) == "AVERAGE(A1:A10)"
+    assert str(new_ast) == "A1 - A2"
 
+# def test_unary_operator_modification():
+#     original_ast = parse("-A1")
+#     modified_ast = parse("+A1")
+#     changes = compare_asts(original_ast, modified_ast)
+#     new_ast, new_nodes = apply_changes_to_ast(original_ast, changes)
+#     assert str(new_ast) == "+A1"
+#
+# def test_apply_outer_changes():
+#     original_ast = parse("SUM(A1:A10)")
+#     modified_ast = parse("AVERAGE(A1:A10)")
+#     changes = compare_asts(original_ast, modified_ast)
+#     print_detected_changes(changes)
+#     new_ast, new_nodes = apply_changes_to_ast(original_ast, changes)
+#     assert str(new_ast) == "AVERAGE(A1:A10)"
+#
+# def test_apply_outer_changes_at_different_parts():
+#     original_ast = parse("SUM(A1:A10)")
+#     modified_ast = parse("AVERAGE(A2:A9)")
+#     changes = compare_asts(original_ast, modified_ast)
+#     print_detected_changes(changes)
+#     new_ast, new_nodes = apply_changes_to_ast(original_ast, changes)
+#     assert str(new_ast) == "AVERAGE(A1:A10)"
 
 #########################
 # COMPLEX MODIFICATIONS #

@@ -32,25 +32,6 @@ def find_node(root, target_history):
     return None
 
 
-def add_node(parent, new_node, position=None, child_side=None):
-    if isinstance(parent, Function):
-        if position is not None:
-            parent.arguments.insert(position, new_node)
-        else:
-            parent.arguments.append(new_node)
-
-    elif isinstance(parent, Binary):
-        if child_side == "left":
-            parent.left = new_node
-        elif child_side == "right":
-            parent.right = new_node
-
-    elif isinstance(parent, Unary):
-        parent.expr = new_node
-
-    new_node.parent = parent
-    return {'node': new_node, 'type': 'addition'}
-
 
 def find_parent_and_child(root, child_history, parent=None):
     if isinstance(root, BaseNode):
@@ -80,18 +61,28 @@ def find_parent_and_child(root, child_history, parent=None):
 from copy import deepcopy
 
 
-def edit_node(node, target_history, new_content, user_id):
-    node_to_edit = find_node(node, target_history)
-    if node_to_edit:
-        new_node = deepcopy(node_to_edit)
-        new_node.update_content(new_content, user_id)
-        # new_node.id_history.append(str(uuid.uuid4()))  # Add new ID to history
-        return new_node
-    return None
-
-
 def replace_node(root, target_history, new_node):
     parent, child_to_replace = find_parent_and_child(root, target_history)
+
+    if parent is None and child_to_replace is root:
+        # Handle the root node replacement
+        if isinstance(root, Function) and isinstance(new_node, Function):
+            # Preserve unchanged children for Function nodes
+            new_node.arguments = [
+                child if child.compare_content(new_arg) else new_arg
+                for child, new_arg in zip_longest(root.arguments, new_node.arguments)
+            ]
+        elif isinstance(root, Binary) and isinstance(new_node, Binary):
+            # Preserve unchanged children for Binary nodes
+            new_node.left = root.left if root.left.compare_content(new_node.left) else new_node.left
+            new_node.right = root.right if root.right.compare_content(new_node.right) else new_node.right
+        elif isinstance(root, Unary) and isinstance(new_node, Unary):
+            # Preserve unchanged child for Unary node
+            new_node.expr = root.expr if root.expr.compare_content(new_node.expr) else new_node.expr
+        new_node.id_history = root.id_history + [str(uuid.uuid4())]
+
+        return {'node': new_node, 'type': 'modification'}
+
     if parent and child_to_replace:
         if isinstance(parent, Function):
             parent.arguments = [
@@ -107,7 +98,9 @@ def replace_node(root, target_history, new_node):
             if parent.expr is child_to_replace:
                 parent.expr = new_node
         new_node.id_history = child_to_replace.id_history + [str(uuid.uuid4())]
+
         return {'node': new_node, 'type': 'modification'}
+
     return False
 
 def delete_node(root, target_history):
@@ -125,3 +118,23 @@ def delete_node(root, target_history):
                 parent.expr = None
         return True
     return False
+
+def add_node(parent, new_node, position=None, child_side=None):
+    if isinstance(parent, Function):
+        if position is not None:
+            parent.arguments.insert(position, new_node)
+        else:
+            parent.arguments.append(new_node)
+
+    elif isinstance(parent, Binary):
+        if child_side == "left":
+            parent.left = new_node
+        elif child_side == "right":
+            parent.right = new_node
+
+    elif isinstance(parent, Unary):
+        parent.expr = new_node
+
+    new_node.parent = parent
+    return {'node': new_node, 'type': 'addition'}
+

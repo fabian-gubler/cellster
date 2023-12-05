@@ -1,6 +1,7 @@
 import pytest
 from parser.parser import parse
 from crdt.ast_comparison import compare_asts
+from tests.integration.test_utils import print_detected_changes
 
 
 # Test for no change
@@ -18,6 +19,12 @@ def test_simple_modification():
     assert len(changes) == 1
     assert changes[0]["type"] == "modification"
 
+# Test for modifications in nested structures
+def test_nested_modification():
+    original_ast = parse("SUM(AVERAGE(A1:A5), A10)")
+    modified_ast = parse("SUM(AVERAGE(A1:A6), A10)")
+    changes = compare_asts(original_ast, modified_ast)
+    assert any(change["type"] == "modification" for change in changes)
 
 # Test for addition
 # def test_addition():
@@ -35,12 +42,6 @@ def test_simple_modification():
 #     assert any(change["type"] == "deletion" for change in changes)
 
 
-# Test for modifications in nested structures
-def test_nested_modification():
-    original_ast = parse("SUM(AVERAGE(A1:A5), A10)")
-    modified_ast = parse("SUM(AVERAGE(A1:A6), A10)")
-    changes = compare_asts(original_ast, modified_ast)
-    assert any(change["type"] == "modification" for change in changes)
 
 
 # Test for root-level modification (change in function)

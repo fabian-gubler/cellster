@@ -17,7 +17,7 @@ def test_one_user_change():
         debug_changes=False,
         debug_new_asts=False,
         debug_merged_asts=False,
-        debug_all=True,
+        debug_all=False,
     )
 
     assert user1_merged_ast_str == expected_output

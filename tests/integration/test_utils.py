@@ -15,10 +15,13 @@ def print_detected_changes(changes):
                 print(
                     f"Modification: Original: {change['original']}, Replacement: {change['modification']}"
                 )
-            elif change["type"] == "addition":
-                print(
-                    f"Addition: Parent: {change['parent_id_history']}, Child: {change['node']}"
-                )
+            else:
+                raise Exception("Invalid change type")
+
+            # elif change["type"] == "addition":
+            #     print(
+            #         f"Addition: Parent: {change['parent_id_history']}, Child: {change['node']}"
+            #     )
             # elif change["type"] == "deletion":
             #     print(f"Deletion: {change['node']}")
             # elif change["type"] == "root_change":

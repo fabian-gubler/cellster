@@ -1,6 +1,6 @@
 import pytest
 from parser.parser import parse
-from parser.tree_operations import delete_node, find_node, replace_node, edit_node, add_node, delete_node
+from parser.tree_operations import delete_node, find_node, replace_node, add_node, delete_node
 from parser.ast_nodes import Cell, Function, Number
 
 

@@ -36,16 +36,16 @@ def merge_ast(original_ast, changes):
             elif depth == 0:
                 conflict_resolution(original_node, modified_node)  # Placeholder for conflict resolution logic
 
-        # Handle additions
-        elif change['type'] == 'addition':
-            parent_node = find_node(original_ast, change["parent_id_history"])
-            add_node(parent_node, change["node"], child_side=change["child_side"])
-
-        # Handle deletions
-        elif change['type'] == 'deletion':
-            parent, child_to_delete = find_parent_and_child(original_ast, change["node"].id_history)
-            if parent and child_to_delete:
-                delete_node(parent, child_to_delete.id_history)
+        # # Handle additions
+        # elif change['type'] == 'addition':
+        #     parent_node = find_node(original_ast, change["parent_id_history"])
+        #     add_node(parent_node, change["node"], child_side=change["child_side"])
+        #
+        # # Handle deletions
+        # elif change['type'] == 'deletion':
+        #     parent, child_to_delete = find_parent_and_child(original_ast, change["node"].id_history)
+        #     if parent and child_to_delete:
+        #         delete_node(parent, child_to_delete.id_history)
         
         else: 
             raise Exception("Invalid change type")
