@@ -10,19 +10,18 @@ from tests.integration.test_utils import print_detected_changes
 ######################
 
 
-
 def test_cell_range_modifications():
     original_ast = parse("SUM(A1:A10)")
     modified_ast = parse("SUM(A1:A9)")
     changes = compare_asts(original_ast, modified_ast)
-    new_ast, new_nodes = apply_changes_to_ast(original_ast, changes)
+    new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
     assert str(new_ast) == "SUM(A1:A9)"
 
 def test_function_modifications():
     original_ast = parse("SUM(A1:A10)")
     modified_ast = parse("AVERAGE(A1:A10)")
     changes = compare_asts(original_ast, modified_ast)
-    new_ast, new_nodes = apply_changes_to_ast(original_ast, changes)
+    new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
     assert str(new_ast) == "AVERAGE(A1:A10)"
 
 
@@ -30,7 +29,7 @@ def test_binary_operator_modification():
     original_ast = parse("A1 + A3")
     modified_ast = parse("A1 - A2")
     changes = compare_asts(original_ast, modified_ast)
-    new_ast, new_nodes = apply_changes_to_ast(original_ast, changes)
+    new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
     assert str(new_ast) == "A1 - A2"
 
 
@@ -38,7 +37,7 @@ def test_unary_operator_modification():
     original_ast = parse("-A1")
     modified_ast = parse("+A1")
     changes = compare_asts(original_ast, modified_ast)
-    new_ast, new_nodes = apply_changes_to_ast(original_ast, changes)
+    new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
     assert str(new_ast) == "+A1"
 
 def test_apply_outer_modification():
@@ -46,7 +45,7 @@ def test_apply_outer_modification():
     modified_ast = parse("AVERAGE(A1:A10)")
     changes = compare_asts(original_ast, modified_ast)
     print_detected_changes(changes)
-    new_ast, new_nodes = apply_changes_to_ast(original_ast, changes)
+    new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
     assert str(new_ast) == "AVERAGE(A1:A10)"
 #
 def test_function_outer_inner_modification():
@@ -54,7 +53,7 @@ def test_function_outer_inner_modification():
     modified_ast = parse("AVERAGE(A2:A9)")
     changes = compare_asts(original_ast, modified_ast)
     print_detected_changes(changes)
-    new_ast, new_nodes = apply_changes_to_ast(original_ast, changes)
+    new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
     assert str(new_ast) == "AVERAGE(A2:A9)"
 
 def test_function_long_modification():
@@ -62,7 +61,7 @@ def test_function_long_modification():
     modified_ast = parse("SUM(A1:A9) + AVERAGE(B2:B9)")
     changes = compare_asts(original_ast, modified_ast)
     # print_detected_changes(changes)
-    new_ast, new_nodes = apply_changes_to_ast(original_ast, changes)
+    new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
     assert str(new_ast) == "SUM(A1:A9) + AVERAGE(B2:B9)"
 
 
