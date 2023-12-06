@@ -36,37 +36,37 @@ def apply_changes_to_ast(original_ast, changes, user_id):
 
     return original_ast, updated_nodes
 
+
 def replace_node(node_to_change, changed_node, user_id):
+    if isinstance(node_to_change, Binary):
+        node_to_change.op = changed_node.op
+        node_to_change.refresh_node(user_id)
 
-            if isinstance(node_to_change, Binary):
-                node_to_change.op = changed_node.op
-                node_to_change.refresh_node(user_id)
+    elif isinstance(node_to_change, CellRange):
+        node_to_change.start = changed_node.start
+        node_to_change.end = changed_node.end
+        node_to_change.refresh_node(user_id)
 
-            elif isinstance(node_to_change, CellRange):
-                node_to_change.start = changed_node.start
-                node_to_change.end = changed_node.end
-                node_to_change.refresh_node(user_id)
+    elif isinstance(node_to_change, Function):
+        node_to_change.func_name = changed_node.func_name
+        node_to_change.refresh_node(user_id)
 
-            elif isinstance(node_to_change, Function):
-                node_to_change.func_name = changed_node.func_name
-                node_to_change.refresh_node(user_id)
+    elif isinstance(node_to_change, Unary):
+        node_to_change.op = changed_node.op
+        node_to_change.refresh_node(user_id)
 
-            elif isinstance(node_to_change, Unary):
-                node_to_change.op = changed_node.op
-                node_to_change.refresh_node(user_id)
+    elif isinstance(node_to_change, Cell):
+        node_to_change.col = changed_node.col
+        node_to_change.row = changed_node.row
+        node_to_change.refresh_node(user_id)
 
-            elif isinstance(node_to_change, Cell):
-                node_to_change.col = changed_node.col
-                node_to_change.row = changed_node.row
-                node_to_change.refresh_node(user_id)
+    # TODO: Add other node types
 
-            # TODO: Add other node types
+    else:
+        raise StructuralChangeException(type(node_to_change))
 
-            else:
-                raise StructuralChangeException(type(node_to_change))
-
-            updated_node={"node": node_to_change, "type": "modification"}
-            return updated_node
+    updated_node = {"node": node_to_change, "type": "modification"}
+    return updated_node
 
 
 def find_node(root, target_history):
