@@ -9,9 +9,6 @@ from parser.ast_nodes import (
     Unary,
 )
 
-from copy import deepcopy
-import uuid
-
 
 class StructuralChangeException(Exception):
     pass
