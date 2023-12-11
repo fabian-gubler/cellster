@@ -1,22 +1,12 @@
-from parser.ast_nodes import (
-    Cell,
-    CellRange,
-    Name,
-    Function,
-    Number,
-    Logical,
-    Binary,
-    Unary,
-)
 from itertools import zip_longest
+from parser.ast_nodes import (Binary, Cell,  # Name,; Number,; Logical,
+                              CellRange, Function, Unary)
 
 
 def compare_asts(original_node, modified_node):
     changes = []
 
-
     def traverse_and_compare(node1, node2):
-
         # As far as I know this covers most cases (except for root level changes)
         # TODO: Check for coverage of cases
 
@@ -98,15 +88,24 @@ def compare_asts(original_node, modified_node):
             if left_match or right_match:
                 # Determine which subtree matches and include this information
                 matching_subtree = "left" if left_match else "right"
-                changes.append({"type": "addition", "child": matching_subtree, "modification": node2})
+                changes.append(
+                    {
+                        "type": "addition",
+                        "child": matching_subtree,
+                        "modification": node2,
+                    }
+                )
             else:
-                    # Structural change other than a simple addition
-                    changes.append({"type": "structural_change", "original": node1, "modification": node2})
+                # Structural change other than a simple addition
+                changes.append(
+                    {
+                        "type": "structural_change",
+                        "original": node1,
+                        "modification": node2,
+                    }
+                )
         else:
             raise Exception("Node type not found for change of type", type(node1))
 
-
-
     traverse_and_compare(original_node, modified_node)
     return changes
-

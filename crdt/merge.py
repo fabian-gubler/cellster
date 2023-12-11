@@ -1,5 +1,6 @@
-from parser.ast_nodes import CellRange, Cell
-from crdt.apply_changes import replace_node, find_node
+from parser.ast_nodes import Cell, CellRange
+
+from crdt.apply_changes import find_node, replace_node
 
 
 class NodeNotFoundError(Exception):
@@ -45,7 +46,6 @@ def merge_ast(original_ast, changes):
             if depth > 0:
                 replace_node(original_node, modified_node, user_id="merged")
             elif depth == 0:
-                raise Exception("Invalid change")
                 winner = conflict_resolution(
                     original_node, modified_node
                 )  # Placeholder for conflict resolution logic
@@ -60,7 +60,8 @@ def merge_ast(original_ast, changes):
         #
         # # Handle deletions
         # elif change['type'] == 'deletion':
-        #     parent, child_to_delete = find_parent_and_child(original_ast, change["node"].id_history)
+        #     parent, child_to_delete = \
+                # find_parent_and_child(original_ast, change["node"].id_history)
         #     if parent and child_to_delete:
         #         delete_node(parent, child_to_delete.id_history)
 

@@ -1,13 +1,5 @@
-from parser.ast_nodes import (
-    Cell,
-    CellRange,
-    Name,
-    Function,
-    Number,
-    Logical,
-    Binary,
-    Unary,
-)
+from parser.ast_nodes import (Binary, Cell,  # Name,; Number,; Logical,
+                              CellRange, Function, Unary)
 
 
 class StructuralChangeException(Exception):
