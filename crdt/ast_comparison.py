@@ -1,6 +1,6 @@
 from itertools import zip_longest
-from parser.ast_nodes import (Binary, Cell,  # Name,; Number,; Logical,
-                              CellRange, Function, Name, Unary)
+from parser.ast_nodes import (Binary, Cell, CellRange, Function, Name, Number,
+                              Unary)
 
 
 def compare_asts(original_node, modified_node):
@@ -17,6 +17,14 @@ def compare_asts(original_node, modified_node):
         #     return
 
         if type(node1) != type(node2):
+            # if node1.parent and node2.parent:
+            #     changes.append(
+            #         {"type": "deletion_arg", "parent": node1.parent, "child": node1}
+            #     )
+            #     changes.append(
+            #         {"type": "addition_arg", "parent": node1.parent, "child": node2}
+            #     )
+
             # Structural change detected due to different types
             # Potential structural change - deeper comparison needed
 
@@ -24,8 +32,13 @@ def compare_asts(original_node, modified_node):
             # Check if this is an addition or a different type of structural change
             # check_for_addition_or_structural_change(node1, node2)
 
+            # else:
             changes.append(
-                {"type": "structural_change", "original": node1, "modification": node2}
+                {
+                    "type": "structural_change",
+                    "original": node1,
+                    "modification": node2,
+                }
             )
             return
 
@@ -37,8 +50,25 @@ def compare_asts(original_node, modified_node):
                 )
 
             # Check for changes in operands
-            traverse_and_compare(node1.left, node2.left)
-            traverse_and_compare(node1.right, node2.right)
+            if not isinstance(node1.left, type(node2.left)):
+                changes.append(
+                    {"type": "deletion_arg", "parent": node1, "child": node1.left}
+                )
+                changes.append(
+                    {"type": "addition_arg", "parent": node1, "child": node2.left}
+                )
+            else:
+                traverse_and_compare(node1.left, node2.left)
+
+            if not isinstance(node1.right, type(node2.right)):
+                changes.append(
+                    {"type": "deletion_arg", "parent": node1, "child": node1.right}
+                )
+                changes.append(
+                    {"type": "addition_arg", "parent": node1, "child": node2.right}
+                )
+            else:
+                traverse_and_compare(node1.right, node2.right)
 
         elif isinstance(node1, CellRange) and isinstance(node2, CellRange):
             # Check for changes in cell range
@@ -56,7 +86,26 @@ def compare_asts(original_node, modified_node):
 
             # Check for changes in operands
             for arg1, arg2 in zip_longest(node1.arguments, node2.arguments):
-                traverse_and_compare(arg1, arg2)
+                if arg1 is None:
+                    # New argument added in modified_node
+                    changes.append(
+                        {"type": "addition_arg", "parent": node1, "child": arg2}
+                    )
+                elif arg2 is None:
+                    # Argument removed in modified_node (if you want to handle deletions)
+                    changes.append(
+                        {"type": "deletion_arg", "parent": node1, "child": arg1}
+                    )
+                elif type(arg1) != type(arg2):
+                    # Different type of argument found, treat as deletion and addition
+                    changes.append(
+                        {"type": "deletion_arg", "parent": node1, "child": arg1}
+                    )
+                    changes.append(
+                        {"type": "addition_arg", "parent": node1, "child": arg2}
+                    )
+                else:
+                    traverse_and_compare(arg1, arg2)
 
         elif isinstance(node1, Unary) and isinstance(node2, Unary):
             # Check for changes in cell value
@@ -76,6 +125,13 @@ def compare_asts(original_node, modified_node):
                 )
 
         elif isinstance(node1, Name) and isinstance(node2, Name):
+            # Check for changes in cell value
+            if not node1.compare_content(node2):
+                changes.append(
+                    {"type": "modification", "original": node1, "modification": node2}
+                )
+
+        elif isinstance(node1, Number) and isinstance(node2, Number):
             # Check for changes in cell value
             if not node1.compare_content(node2):
                 changes.append(

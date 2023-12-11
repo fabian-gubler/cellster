@@ -1,5 +1,5 @@
-from parser.ast_nodes import (Binary, Cell,  # Number,; Logical,
-                              CellRange, Function, Name, Unary)
+from parser.ast_nodes import CellRange  # Number,; Logical,
+from parser.ast_nodes import Binary, Cell, Function, Name, Unary
 
 
 class StructuralChangeException(Exception):
@@ -20,10 +20,63 @@ def apply_changes_to_ast(original_ast, changes, user_id):
 
             updated_nodes.append(updated_node)
 
+        elif change["type"] == "addition_arg":
+            node_to_add = find_node(original_ast, change["parent"].id_history)
+            child_node = change["child"]
+            if node_to_add is None:
+                raise Exception("Parent node not found in original AST")
+            updated_node = add_child(node_to_add, child_node, user_id)
+            updated_nodes.append(updated_node)
+
+        elif change["type"] == "deletion_arg":
+            node_to_remove = find_node(original_ast, change["parent"].id_history)
+            child_node = change["child"]
+            if node_to_remove is None:
+                raise Exception("Parent node not found in original AST")
+            updated_node = remove_child(node_to_remove, child_node, user_id)
+            updated_nodes.append(updated_node)
+
         else:
             raise StructuralChangeException("Change type not found")
 
     return original_ast, updated_nodes
+
+
+def add_child(node_to_add, child_node, user_id):
+    if isinstance(node_to_add, Function):
+        node_to_add.arguments.append(child_node)
+        child_node.refresh_node(user_id)
+    elif isinstance(node_to_add, Binary):
+        if node_to_add.left is None:
+            node_to_add.left = child_node
+            child_node.refresh_node(user_id)
+        elif node_to_add.right is None:
+            node_to_add.right = child_node
+            child_node.refresh_node(user_id)
+        else:
+            raise Exception("Binary node already has two children")
+    else:
+        # Handle other types if needed
+        raise Exception("Node type to add not found")
+
+    updated_node = {"node": node_to_add, "type": "addition_arg"}
+    return updated_node
+
+
+def remove_child(node_to_remove, child_node, user_id):
+    if isinstance(node_to_remove, Function):
+        node_to_remove.arguments.remove(child_node)
+    elif isinstance(node_to_remove, Binary):
+        if node_to_remove.left == child_node:
+            node_to_remove.left = None
+        elif node_to_remove.right == child_node:
+            node_to_remove.right = None
+    else:
+        # Handle other types if needed
+        raise Exception("Node type to remove not found")
+
+    updated_node = {"node": node_to_remove, "type": "deletion_arg"}
+    return updated_node
 
 
 def replace_node(node_to_change, changed_node, user_id):
