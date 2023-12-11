@@ -94,49 +94,123 @@ def test_mixed_modifications_and_structural_changes():
     assert str(new_ast) == "SUM(A2:A9, MAX(B2:B6))"
 
 
-######################
-# FUNCTION ARGUMENTS #
-######################
+##########################
+# ADD FUNCTION ARGUMENTS #
+##########################
 
 
-# def test_add_argument_to_simple_function():
-#     original_ast = parse("SUM(A1:A10)")
-#     modified_ast = parse("SUM(A1:A10, B1:B10)")
-#     changes = compare_asts(original_ast, modified_ast)
-#     new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
-#     assert str(new_ast) == ""
-#
-#
-# def test_add_argument_to_nested_function():
-#     original_ast = parse("SUM(AVERAGE(A1:A10))")
-#     modified_ast = parse("SUM(AVERAGE(A1:A10), B1)")
-#     changes = compare_asts(original_ast, modified_ast)
-#     new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
-#     assert str(new_ast) == ""
-#
-#
-# def test_add_multiple_arguments():
-#     original_ast = parse("SUM(A1:A10)")
-#     modified_ast = parse("SUM(A1:A10, B1, C1:C10)")
-#     changes = compare_asts(original_ast, modified_ast)
-#     new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
-#     assert str(new_ast) == ""
-#
-#
-# def test_add_complex_argument():
-#     original_ast = parse("SUM(A1:A10)")
-#     modified_ast = parse("SUM(A1:A10, AVERAGE(B1:B10))")
-#     changes = compare_asts(original_ast, modified_ast)
-#     new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
-#     assert str(new_ast) == ""
-#
-#
-# def test_add_argument_deep_nested_function():
-#     original_ast = parse("SUM(AVERAGE(A1:A10, MAX(B1:B10)))")
-#     modified_ast = parse("SUM(AVERAGE(A1:A10, MAX(B1:B10)), MIN(C1:C10))")
-#     changes = compare_asts(original_ast, modified_ast)
-#     new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
-#     assert str(new_ast) == ""
+def test_add_argument_to_simple_function():
+    original_ast = parse("SUM(A1:A10)")
+    modified_ast = parse("SUM(A1:A10, B1:B10)")
+    changes = compare_asts(original_ast, modified_ast)
+    new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
+    assert str(new_ast) == "SUM(A1:A10, B1:B10)"
+
+
+def test_add_argument_to_nested_function():
+    original_ast = parse("SUM(AVERAGE(A1:A10))")
+    modified_ast = parse("SUM(AVERAGE(A1:A10), B1)")
+    changes = compare_asts(original_ast, modified_ast)
+    new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
+    assert str(new_ast) == "SUM(AVERAGE(A1:A10), B1)"
+
+
+def test_add_multiple_arguments():
+    original_ast = parse("SUM(A1:A10)")
+    modified_ast = parse("SUM(A1:A10, B1, C1:C10)")
+    changes = compare_asts(original_ast, modified_ast)
+    new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
+    assert str(new_ast) == "SUM(A1:A10, B1, C1:C10)"
+
+
+def test_add_complex_argument():
+    original_ast = parse("SUM(A1:A10)")
+    modified_ast = parse("SUM(A1:A10, AVERAGE(B1:B10))")
+    changes = compare_asts(original_ast, modified_ast)
+    new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
+    assert str(new_ast) == "SUM(A1:A10, AVERAGE(B1:B10))"
+
+
+def test_add_argument_deep_nested_function():
+    original_ast = parse("SUM(AVERAGE(A1:A10, MAX(B1:B10)))")
+    modified_ast = parse("SUM(AVERAGE(A1:A10, MAX(B1:B10)), MIN(C1:C10))")
+    changes = compare_asts(original_ast, modified_ast)
+    new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
+    assert str(new_ast) == "SUM(AVERAGE(A1:A10, MAX(B1:B10)), MIN(C1:C10))"
+
+
+def test_add_nested_outer_function():
+    original_ast = parse("SUM(A1:A10)")
+    modified_ast = parse("SUM(AVERAGE(A1:A10))")
+    changes = compare_asts(original_ast, modified_ast)
+    new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
+    assert str(new_ast) == "SUM(AVERAGE(A1:A10))"
+
+
+#############################
+# DELETE FUNCTION ARGUMENTS #
+#############################
+
+
+def test_remove_argument_to_simple_function():
+    original_ast = parse("SUM(A1:A10, B1:B10)")
+    modified_ast = parse("SUM(A1:A10)")
+    changes = compare_asts(original_ast, modified_ast)
+    new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
+    assert str(new_ast) == "SUM(A1:A10)"
+
+
+def test_remove_argument_to_nested_function():
+    original_ast = parse("SUM(AVERAGE(A1:A10), B1)")
+    modified_ast = parse("SUM(AVERAGE(A1:A10))")
+    changes = compare_asts(original_ast, modified_ast)
+    new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
+    assert str(new_ast) == "SUM(AVERAGE(A1:A10))"
+
+
+def test_remove_multiple_arguments():
+    original_ast = parse("SUM(A1:A10, B1, C1:C10)")
+    modified_ast = parse("SUM(A1:A10)")
+    changes = compare_asts(original_ast, modified_ast)
+    new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
+    assert str(new_ast) == "SUM(A1:A10)"
+
+
+def test_remove_complex_argument():
+    original_ast = parse("SUM(A1:A10, AVERAGE(B1:B10))")
+    modified_ast = parse("SUM(A1:A10)")
+    changes = compare_asts(original_ast, modified_ast)
+    new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
+    assert str(new_ast) == "SUM(A1:A10)"
+
+
+def test_remove_argument_deep_nested_function():
+    original_ast = parse("SUM(AVERAGE(A1:A10, MAX(B1:B10)), MIN(C1:C10))")
+    modified_ast = parse("SUM(AVERAGE(A1:A10, MAX(B1:B10)))")
+    changes = compare_asts(original_ast, modified_ast)
+    new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
+    assert str(new_ast) == "SUM(AVERAGE(A1:A10, MAX(B1:B10)))"
+
+
+#####################
+# CHANGE TYPE TESTS #
+#####################
+
+
+def test_change_cell_to_range_in_function():
+    original_ast = parse("SUM(A1)")
+    modified_ast = parse("SUM(A1:A10)")
+    changes = compare_asts(original_ast, modified_ast)
+    new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
+    assert str(new_ast) == "SUM(A1:A10)"
+
+
+def test_change_cell_to_number():
+    original_ast = parse("A1 + 5")
+    modified_ast = parse("10 + 5")
+    changes = compare_asts(original_ast, modified_ast)
+    new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
+    assert str(new_ast) == "10 + 5"
 
 
 ######################
@@ -158,14 +232,32 @@ def test_mixed_modifications_and_structural_changes():
 #     assert str(new_ast) == "A1 + A2 + A3"
 
 
-# def test_apply_root_additions():
+# def test_complex_binary_right_addition():
 #     original_ast = parse("SUM(A1:A10)")
 #     modified_ast = parse("SUM(A1:A10) + 1")
 #     changes = compare_asts(original_ast, modified_ast)
 #     new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
 #     # assert str(new_ast) == "SUM(A1:A10 + 1)"
-#
-#
+
+# def test_add_outer_function():
+#     original_ast = parse("A1")
+#     modified_ast = parse("SUM(A1)")
+#     changes = compare_asts(original_ast, modified_ast)
+#     new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
+#     # assert str(new_ast) == "SUM(A1:A10 + 1)"
+
+# def test_add_outer_logical():
+#     original_ast = parse("A1")
+#     modified_ast = parse("NOT(A1)")
+#     changes = compare_asts(original_ast, modified_ast)
+#     new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
+#     # assert str(new_ast) == "SUM(A1:A10 + 1)"
+
+
+######################
+# ROOT LEVEL Deletions
+######################
+
 # def test_apply_root_deletions():
 #     original_ast = parse("SUM(A1:A10) + 1")
 #     modified_ast = parse("SUM(A1:A10)")
@@ -173,47 +265,17 @@ def test_mixed_modifications_and_structural_changes():
 #     new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
 #     assert str(new_ast) == "SUM(A1:A10)"
 
-#####################
-# ARGUMENT DELETION #
-#####################
 
-# def test_apply_deletions():
-#     original_ast = parse("SUM(A1:A10, 5)")
-#     modified_ast = parse("SUM(A1:A10)")
-#     changes = compare_asts(original_ast, modified_ast)
-#     new_ast, new_nodes = apply_changes_to_ast(original_ast, changes)
-#     assert str(new_ast) == "SUM(A1:A10)"
-
-
-#####################
-# CHANGE TYPE TESTS #
-#####################
-
-# Replacement: 1. Deletion -> 2. Addition
-
+######################
+# ROOT LEVEL Modifications
+######################
 
 # def test_change_cell_to_range():
 #     original_ast = parse("A1")
 #     modified_ast = parse("A1:A10")
 #     changes = compare_asts(original_ast, modified_ast)
 #     new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
-#     assert str(new_ast) == "A1:A10"
-#
-#
-# def test_change_cell_to_range_in_function():
-#     original_ast = parse("SUM(A1)")
-#     modified_ast = parse("SUM(A1:A10)")
-#     changes = compare_asts(original_ast, modified_ast)
-#     new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
-#     assert str(new_ast) == "SUM(A1:A10)"
-#
-#
-# def test_change_cell_to_number():
-#     original_ast = parse("A1 + 5")
-#     modified_ast = parse("10 + 5")
-#     changes = compare_asts(original_ast, modified_ast)
-#     new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
-#     assert str(new_ast) == "10 + 5"
+#     assert str(new_ast) == "A2"
 
 
 ##############################
