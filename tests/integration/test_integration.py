@@ -1,6 +1,6 @@
 import pytest  # noqa: F401
 
-from tests.integration.test_utils import process_and_merge_asts
+from utils.test_utils import process_and_merge_asts
 
 
 def test_cell_range_modification():

@@ -4,7 +4,7 @@ import pytest  # noqa: F401
 
 from crdt.apply_changes import apply_changes_to_ast
 from crdt.ast_comparison import compare_asts
-from tests.integration.test_utils import print_detected_changes
+from utils.test_utils import print_detected_changes
 
 ######################
 # Modification tests #
