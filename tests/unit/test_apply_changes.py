@@ -1,9 +1,10 @@
-import pytest
 from parser.parser import parse
-from crdt.ast_comparison import compare_asts
-from crdt.apply_changes import apply_changes_to_ast, StructuralChangeException
-from tests.integration.test_utils import print_detected_changes
 
+import pytest  # noqa: F401
+
+from crdt.apply_changes import apply_changes_to_ast
+from crdt.ast_comparison import compare_asts
+from tests.integration.test_utils import print_detected_changes
 
 ######################
 # Modification tests #
@@ -15,7 +16,9 @@ def test_cell_range_modifications():
     modified_ast = parse("SUM(A1:A9)")
     changes = compare_asts(original_ast, modified_ast)
     new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
+    assert str(modified_ast) == "SUM(A1:A9)"
     assert str(new_ast) == "SUM(A1:A9)"
+
 
 def test_function_modifications():
     original_ast = parse("SUM(A1:A10)")
@@ -40,6 +43,7 @@ def test_unary_operator_modification():
     new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
     assert str(new_ast) == "+A1"
 
+
 def test_apply_outer_modification():
     original_ast = parse("SUM(A1:A10)")
     modified_ast = parse("AVERAGE(A1:A10)")
@@ -47,7 +51,8 @@ def test_apply_outer_modification():
     print_detected_changes(changes)
     new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
     assert str(new_ast) == "AVERAGE(A1:A10)"
-#
+
+
 def test_function_outer_inner_modification():
     original_ast = parse("SUM(A1:A10)")
     modified_ast = parse("AVERAGE(A2:A9)")
@@ -56,6 +61,7 @@ def test_function_outer_inner_modification():
     new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
     assert str(new_ast) == "AVERAGE(A2:A9)"
 
+
 def test_function_long_modification():
     original_ast = parse("SUM(A1:A10) + AVERAGE(B1:B10)")
     modified_ast = parse("SUM(A1:A9) + AVERAGE(B2:B9)")
@@ -63,7 +69,6 @@ def test_function_long_modification():
     # print_detected_changes(changes)
     new_ast, new_nodes = apply_changes_to_ast(original_ast, changes, user_id="test")
     assert str(new_ast) == "SUM(A1:A9) + AVERAGE(B2:B9)"
-
 
 
 ####################

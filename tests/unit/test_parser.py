@@ -1,15 +1,8 @@
+from parser.ast_nodes import (Binary, Cell, CellRange, Function,  # Name,
+                              Logical, Number, Unary)
+from parser.parser import FormulaParseError, parse
+
 import pytest
-from parser.parser import parse, FormulaParseError
-from parser.ast_nodes import (
-    Cell,
-    CellRange,
-    Name,
-    Function,
-    Number,
-    Logical,
-    Binary,
-    Unary,
-)
 
 
 def test_parse_number():
@@ -87,6 +80,7 @@ def test_parse_complex_expression():
 def test_parse_error_incomplete_function_call():
     with pytest.raises(FormulaParseError):
         parse("SUM(")  # Incomplete function call
+
 
 def test_parse_error_incomplete_expression():
     with pytest.raises(FormulaParseError):

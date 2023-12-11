@@ -1,9 +1,9 @@
-import pytest
+import pytest  # noqa: F401
+
 from tests.integration.test_utils import process_and_merge_asts
 
 
 def test_cell_range_modification():
-
     original_ast = "SUM(A1:A10)"
     user1_ast_str = "SUM(A1:A10)"
     user2_ast_str = "SUM(A2:A9)"
@@ -23,8 +23,8 @@ def test_cell_range_modification():
     assert user1_merged_ast_str == expected_output
     assert user2_merged_ast_str == expected_output
 
-def test_function_modification():
 
+def test_function_modification():
     original_ast = "SUM(A1:A10)"
     user1_ast_str = "AVERAGE(A1:A10)"
     user2_ast_str = "SUM(A1:A10)"
@@ -44,8 +44,8 @@ def test_function_modification():
     assert user1_merged_ast_str == expected_output
     assert user2_merged_ast_str == expected_output
 
-def test_function_outer_inner():
 
+def test_function_outer_inner():
     original_ast = "SUM(A1:A10)"
     user1_ast_str = "AVERAGE(A1:A10)"
     user2_ast_str = "SUM(A2:A9)"
@@ -65,6 +65,7 @@ def test_function_outer_inner():
     assert user1_merged_ast_str == expected_output
     assert user2_merged_ast_str == expected_output
 
+
 def test_multiple_non_conflicting_modifications():
     original_ast = "SUM(A1:A10) + AVERAGE(B1:B10)"
     user1_ast_str = "SUM(A1:A9) + AVERAGE(B1:B10)"
@@ -81,12 +82,12 @@ def test_multiple_non_conflicting_modifications():
         debug_merged_asts=False,
         debug_all=True,
     )
-#
+    #
     assert user1_merged_ast_str == expected_output
     assert user2_merged_ast_str == expected_output
 
-def test_rule_based_modification():
 
+def test_rule_based_modification():
     original_ast = "SUM(A1:A10)"
     user1_ast_str = "SUM(A3:A1)"
     user2_ast_str = "SUM(A2:A10)"
@@ -106,11 +107,12 @@ def test_rule_based_modification():
     assert user1_merged_ast_str == expected_output
     assert user2_merged_ast_str == expected_output
 
+
 # def test_conflicting_modification():
 #
 #     original_ast = "A1 + A2"
 #     user1_ast_str = "A1 + A3" # commited earlier (winner)
-#     user2_ast_str = "A1 + A4" 
+#     user2_ast_str = "A1 + A4"
 #
 #     expected_output = "A1 + A3"
 #

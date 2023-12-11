@@ -1,8 +1,9 @@
-from parser.parser import parse
-from crdt.ast_comparison import compare_asts
-from crdt.apply_changes import apply_changes_to_ast
-from crdt.merge import merge_ast
 from copy import deepcopy
+from parser.parser import parse
+
+from crdt.apply_changes import apply_changes_to_ast
+from crdt.ast_comparison import compare_asts
+from crdt.merge import merge_ast
 
 
 def print_detected_changes(changes):
@@ -13,7 +14,8 @@ def print_detected_changes(changes):
             # if empty print no changes
             if change["type"] == "modification":
                 print(
-                    f"Modification: Original: {change['original']}, Replacement: {change['modification']}"
+                    f"Modification: Original: {change['original']}, \
+                            Replacement: {change['modification']}"
                 )
             else:
                 raise Exception("Invalid change type")
@@ -68,8 +70,12 @@ def process_and_merge_asts(
     # Proceed with the following steps once connection has been established ...
 
     # Apply changes
-    user1_new_ast, user1_new_nodes = apply_changes_to_ast(user1_original_ast, user1_changes, user_id="user_1")
-    user2_new_ast, user2_new_nodes = apply_changes_to_ast(user2_original_ast, user2_changes, user_id="user_2")
+    user1_new_ast, user1_new_nodes = apply_changes_to_ast(
+        user1_original_ast, user1_changes, user_id="user_1"
+    )
+    user2_new_ast, user2_new_nodes = apply_changes_to_ast(
+        user2_original_ast, user2_changes, user_id="user_2"
+    )
 
     if debug_new_asts:
         print("")
