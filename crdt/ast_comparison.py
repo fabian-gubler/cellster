@@ -142,33 +142,33 @@ def compare_asts(original_node, modified_node):
             # print the node type
             raise Exception("Node type not found for change of type", type(node1))
 
-    def check_for_addition_or_structural_change(node1, node2):
-        # Check for a new Binary root node addition
-        if isinstance(node2, Binary):
-            left_match = traverse_and_compare(node2.left, node1)
-            right_match = traverse_and_compare(node2.right, node1)
-
-            if left_match or right_match:
-                # Determine which subtree matches and include this information
-                matching_subtree = "left" if left_match else "right"
-                changes.append(
-                    {
-                        "type": "addition",
-                        "child": matching_subtree,
-                        "modification": node2,
-                    }
-                )
-            else:
-                # Structural change other than a simple addition
-                changes.append(
-                    {
-                        "type": "structural_change",
-                        "original": node1,
-                        "modification": node2,
-                    }
-                )
-        else:
-            raise Exception("Node type not found for change of type", type(node1))
+    # def check_for_addition_or_structural_change(node1, node2):
+    #     # Check for a new Binary root node addition
+    #     if isinstance(node2, Binary):
+    #         left_match = traverse_and_compare(node2.left, node1)
+    #         right_match = traverse_and_compare(node2.right, node1)
+    #
+    #         if left_match or right_match:
+    #             # Determine which subtree matches and include this information
+    #             matching_subtree = "left" if left_match else "right"
+    #             changes.append(
+    #                 {
+    #                     "type": "addition",
+    #                     "child": matching_subtree,
+    #                     "modification": node2,
+    #                 }
+    #             )
+    #         else:
+    #             # Structural change other than a simple addition
+    #             changes.append(
+    #                 {
+    #                     "type": "structural_change",
+    #                     "original": node1,
+    #                     "modification": node2,
+    #                 }
+    #             )
+    #     else:
+    #         raise Exception("Node type not found for change of type", type(node1))
 
     traverse_and_compare(original_node, modified_node)
     return changes
