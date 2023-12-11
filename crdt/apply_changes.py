@@ -33,7 +33,7 @@ def apply_changes_to_ast(original_ast, changes, user_id):
             child_node = change["child"]
             if node_to_remove is None:
                 raise Exception("Parent node not found in original AST")
-            updated_node = remove_child(node_to_remove, child_node, user_id)
+            updated_node = remove_child(node_to_remove, child_node)
             updated_nodes.append(updated_node)
 
         else:
@@ -63,7 +63,7 @@ def add_child(node_to_add, child_node, user_id):
     return updated_node
 
 
-def remove_child(node_to_remove, child_node, user_id):
+def remove_child(node_to_remove, child_node):
     if isinstance(node_to_remove, Function):
         node_to_remove.arguments.remove(child_node)
     elif isinstance(node_to_remove, Binary):
