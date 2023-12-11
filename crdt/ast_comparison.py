@@ -1,6 +1,6 @@
 from itertools import zip_longest
 from parser.ast_nodes import (Binary, Cell,  # Name,; Number,; Logical,
-                              CellRange, Function, Unary)
+                              CellRange, Function, Name, Unary)
 
 
 def compare_asts(original_node, modified_node):
@@ -69,6 +69,13 @@ def compare_asts(original_node, modified_node):
             traverse_and_compare(node1.expr, node2.expr)
 
         elif isinstance(node1, Cell) and isinstance(node2, Cell):
+            # Check for changes in cell value
+            if not node1.compare_content(node2):
+                changes.append(
+                    {"type": "modification", "original": node1, "modification": node2}
+                )
+
+        elif isinstance(node1, Name) and isinstance(node2, Name):
             # Check for changes in cell value
             if not node1.compare_content(node2):
                 changes.append(

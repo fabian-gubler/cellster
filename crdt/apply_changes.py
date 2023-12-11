@@ -1,5 +1,5 @@
-from parser.ast_nodes import (Binary, Cell,  # Name,; Number,; Logical,
-                              CellRange, Function, Unary)
+from parser.ast_nodes import (Binary, Cell,  # Number,; Logical,
+                              CellRange, Function, Name, Unary)
 
 
 class StructuralChangeException(Exception):
@@ -47,6 +47,10 @@ def replace_node(node_to_change, changed_node, user_id):
     elif isinstance(node_to_change, Cell):
         node_to_change.col = changed_node.col
         node_to_change.row = changed_node.row
+        node_to_change.refresh_node(user_id)
+
+    elif isinstance(node_to_change, Name):
+        node_to_change.name = changed_node.name
         node_to_change.refresh_node(user_id)
 
     # TODO: Add other node types
