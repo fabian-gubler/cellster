@@ -1,5 +1,5 @@
-import uuid
 import datetime
+import uuid
 
 
 class BaseNode:
@@ -33,10 +33,14 @@ class Function(BaseNode):
         for i, arg in enumerate(self.arguments):
             arg.parent = self
             arg.position = i
+        self.get_contents()
 
     def __str__(self):
         arg_strs = [str(arg) for arg in self.arguments]
         return f"{self.func_name}({', '.join(arg_strs)})"
+
+    def get_contents(self):
+        self.contents = str(self)
 
     def compare_content(self, other_node):
         return self.func_name == other_node.func_name
@@ -60,9 +64,13 @@ class CellRange(BaseNode):
         super().__init__(f"Range[{start}][{end}]", user_id)
         self.start = start
         self.end = end
+        self.get_contents()
 
     def __str__(self):
         return f"{str(self.start)}:{str(self.end)}"
+
+    def get_contents(self):
+        self.contents = str(self)
 
     def compare_content(self, other_node):
         return self.start.compare_content(
@@ -74,9 +82,13 @@ class Name(BaseNode):
     def __init__(self, name, user_id):
         super().__init__(f"Name[{name}]", user_id)
         self.name = name
+        self.get_contents()
 
     def __str__(self):
         return str(self.name)
+
+    def get_contents(self):
+        self.contents = str(self)
 
     def compare_content(self, other_node):
         return self.name == other_node.name
@@ -86,9 +98,13 @@ class Number(BaseNode):
     def __init__(self, value, user_id):
         super().__init__(f"Num[{value}]", user_id)
         self.value = value
+        self.get_contents()
 
     def __str__(self):
         return str(self.value)
+
+    def get_contents(self):
+        self.contents = str(self)
 
     def compare_content(self, other_node):
         return self.value == other_node.value
@@ -98,9 +114,13 @@ class Logical(BaseNode):
     def __init__(self, value, user_id):
         super().__init__(f"Bool[{value}]", user_id)
         self.value = value
+        self.get_contents()
 
     def __str__(self):
         return str(self.value)
+
+    def get_contents(self):
+        self.contents = str(self)
 
     def compare_content(self, other_node):
         return self.value == other_node.value
@@ -112,9 +132,13 @@ class Binary(BaseNode):
         self.left = left
         self.op = op
         self.right = right
+        self.get_contents()
 
     def __str__(self):
         return f"{str(self.left)} {self.op} {str(self.right)}"
+
+    def get_contents(self):
+        self.contents = str(self)
 
     def compare_content(self, other_node):
         return self.op == other_node.op
@@ -125,9 +149,13 @@ class Unary(BaseNode):
         super().__init__(f"Unary[{op}]", user_id)
         self.op = op
         self.expr = expr
+        self.get_contents()
 
     def __str__(self):
         return f"{self.op}{str(self.expr)}"
+
+    def get_contents(self):
+        self.contents = str(self)
 
     def compare_content(self, other_node):
         return self.op == other_node.op
