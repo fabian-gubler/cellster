@@ -45,7 +45,18 @@ def apply_changes_to_ast(original_ast, changes, user_id):
             original_ast, updated_node = add_parent(
                 new_root_node, node_to_add_to, original_ast, user_id, direction
             )
+            updated_nodes.append(updated_node)
 
+        elif change["type"] == "deletion_root":
+            new_root = find_node(original_ast, change["child"].id_history)
+            original_ast = new_root
+            updated_node = {"node": new_root, "type": "deletion_root"}
+            updated_nodes.append(updated_node)
+
+        elif change["type"] == "root_modification":
+            new_root = change["modification"]
+            original_ast = new_root
+            updated_node = {"node": new_root, "type": "root_modification"}
             updated_nodes.append(updated_node)
 
         else:
