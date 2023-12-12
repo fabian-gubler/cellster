@@ -1,8 +1,9 @@
 from parser.ast_nodes import (Binary, Cell, CellRange, Function, Name, Number,
                               Unary)
 
-from crdt.ast_operations import (find_node, add_child_node, add_root_node, modify_node,
-                                 remove_child_node, remove_root_node)
+from crdt.ast_operations import (add_child_node, add_root_node, find_node,
+                                 modify_node, remove_child_node,
+                                 remove_root_node, replace_root_node)
 
 
 class NodeNotFoundError(Exception):
@@ -26,6 +27,32 @@ def merge_ast(original_ast, changes):
             child_node = change["node"]
             remove_child_node(parent_node, child_node)
 
+        elif change["type"] == "addition_root":
+            child_node = find_node(original_ast, change["child"].id_history)
+            new_root_node = change["parent"]
+            direction = change["direction"]
+            original_ast = add_root_node(
+                original_ast,
+                new_root_node,
+                child_node,
+                direction,
+                user_id="merged",
+                return_node=False,
+            )
+
+        elif change["type"] == "deletion_root":
+            new_root_node = find_node(original_ast, change["child"].id_history)
+
+            original_ast = remove_root_node(
+                original_ast, new_root_node, return_node=False
+            )
+
+        elif change["type"] == "root_modification":
+            new_root_node = change["modification"]
+
+            original_ast, updated_node = replace_root_node(
+                original_ast, new_root_node, user_id="merged", return_node=True
+            )
         else:
             raise Exception("Invalid change type")
 
@@ -93,16 +120,14 @@ def merge_cell_ranges(node1, node2):
 
 
 def conflict_resolution(original_node, updated_node):
-    # Placeholder function for conflict resolution
-    # Implement conflict resolution logic here
-
     # compare timestamps
-
     if original_node.timestamp > updated_node.timestamp:
         # original_node commited later
         return updated_node
     elif original_node.timestamp < updated_node.timestamp:
         # updated_node is more recent
         return original_node
+    # timestamps are equal
     else:
-        pass
+        if original_node.tie_breaker_value() > updated_node.tie_breaker_value():
+            return updated_node

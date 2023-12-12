@@ -2,8 +2,9 @@ from copy import deepcopy
 from parser.ast_nodes import CellRange  # Number,; Logical,
 from parser.ast_nodes import Binary, Cell, Function, Name, Unary
 
-from crdt.ast_operations import (find_node, add_child_node, add_root_node, modify_node,
-                                 remove_child_node, remove_root_node)
+from crdt.ast_operations import (add_child_node, add_root_node, find_node,
+                                 modify_node, remove_child_node,
+                                 remove_root_node, replace_root_node)
 
 
 class StructuralChangeException(Exception):
@@ -52,29 +53,27 @@ def apply_changes_to_ast(original_ast, changes, user_id):
                 child_node,
                 direction,
                 user_id,
-                return_node=True
+                return_node=True,
             )
             updated_nodes.append(updated_node)
 
         elif change["type"] == "deletion_root":
             new_root_node = find_node(original_ast, change["child"].id_history)
-            
+
             original_ast, updated_node = remove_root_node(
-                original_ast,
-                new_root_node,
-                return_node=True
+                original_ast, new_root_node, return_node=True
             )
             updated_nodes.append(updated_node)
 
-        # elif change["type"] == "root_modification":
-        #     new_root = change["modification"]
-        #     original_ast = new_root
-        #     updated_node = {"node": new_root, "type": "root_modification"}
-        #     updated_nodes.append(updated_node)
+        elif change["type"] == "root_modification":
+            new_root_node = change["modification"]
+
+            original_ast, updated_node = replace_root_node(
+                original_ast, new_root_node, user_id, return_node=True
+            )
+            updated_nodes.append(updated_node)
 
         else:
             raise StructuralChangeException("Change type not found")
 
     return original_ast, updated_nodes
-
-

@@ -24,15 +24,18 @@ def compare_asts(original_node, modified_node):
                 return False
 
         if type(node1) != type(node2):
-            # if node1.is_root() and node2.is_root():
-            #     # Handle root node modification as deletion followed by addition
-            #     changes.append(
-            #         {
-            #             "type": "root_modification",
-            #             "original": node1,
-            #             "modification": node2,
-            #         }
-            #     )
+            if node1.is_root() and node2.is_root():
+                # Exclude composite types (Function, Binary, Unary)
+                if not isinstance(node1, (Function, Binary, Unary)) and not isinstance(
+                    node2, (Function, Binary, Unary)
+                ):
+                    changes.append(
+                        {
+                            "type": "root_modification",
+                            "original": node1,
+                            "modification": node2,
+                        }
+                    )
             if not check_for_addition_or_structural_change(node1, node2):
                 return  # No further traversal needed
 
