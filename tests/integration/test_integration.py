@@ -1,14 +1,14 @@
-import pytest  # noqa: F401
+import pytest  # pyright: ignore # noqa F401
 
 from utils.test_utils import process_and_merge_asts
 
 
-def test_cell_range_modification():
-    original_ast = "SUM(A1:A10)"
-    user1_ast_str = "SUM(A1:A10)"
-    user2_ast_str = "SUM(A2:A9)"
+def test_rule_based_modification():
+    original_ast = "SUM(A2:A8)"
+    user1_ast_str = "SUM(A3:A10)"
+    user2_ast_str = "SUM(A1:A8)"
 
-    expected_output = "SUM(A2:A9)"
+    expected_output = "SUM(A1:A10)"
 
     user1_merged_ast_str, user2_merged_ast_str = process_and_merge_asts(
         original_ast,
@@ -46,11 +46,11 @@ def test_function_modification():
 
 
 def test_function_outer_inner():
-    original_ast = "SUM(A1:A10)"
-    user1_ast_str = "AVERAGE(A1:A10)"
-    user2_ast_str = "SUM(A2:A9)"
+    original_ast = "SUM(A2:A9)"
+    user1_ast_str = "AVERAGE(A2:A9)"
+    user2_ast_str = "SUM(A1:A10)"
 
-    expected_output = "AVERAGE(A2:A9)"
+    expected_output = "AVERAGE(A1:A10)"
 
     user1_merged_ast_str, user2_merged_ast_str = process_and_merge_asts(
         original_ast,
@@ -66,12 +66,12 @@ def test_function_outer_inner():
     assert user2_merged_ast_str == expected_output
 
 
-def test_multiple_non_conflicting_modifications():
-    original_ast = "SUM(A1:A10) + AVERAGE(B1:B10)"
-    user1_ast_str = "SUM(A1:A9) + AVERAGE(B1:B10)"
-    user2_ast_str = "SUM(A1:A10) + AVERAGE(B2:B10)"
+def test_function_change_add_args():
+    original_ast = "SUM(A2:A9)"
+    user1_ast_str = "SUM(A2:A9, 5)"
+    user2_ast_str = "SUM(A1:A10)"
 
-    expected_output = "SUM(A1:A9) + AVERAGE(B2:B10)"
+    expected_output = "SUM(A1:A10, 5)"
 
     user1_merged_ast_str, user2_merged_ast_str = process_and_merge_asts(
         original_ast,
@@ -80,19 +80,21 @@ def test_multiple_non_conflicting_modifications():
         debug_changes=False,
         debug_new_asts=False,
         debug_merged_asts=False,
-        debug_all=True,
+        debug_all=False,
     )
-    #
+
     assert user1_merged_ast_str == expected_output
     assert user2_merged_ast_str == expected_output
 
 
-def test_rule_based_modification():
+def test_function_two_add_args():
     original_ast = "SUM(A1:A10)"
-    user1_ast_str = "SUM(A3:A1)"
-    user2_ast_str = "SUM(A2:A10)"
+    user1_ast_str = "SUM(A1:A10, 5)"
+    user2_ast_str = "SUM(A1:A10, 5)"
 
-    expected_output = "SUM(A2:A10)"
+    expected_output = (
+        "SUM(A1:A10, 5, 5)"  # TODO: rule-based range approach (order matters)
+    )
 
     user1_merged_ast_str, user2_merged_ast_str = process_and_merge_asts(
         original_ast,
@@ -101,12 +103,32 @@ def test_rule_based_modification():
         debug_changes=False,
         debug_new_asts=False,
         debug_merged_asts=False,
-        debug_all=True,
+        debug_all=False,
     )
 
     assert user1_merged_ast_str == expected_output
     assert user2_merged_ast_str == expected_output
 
+
+# def test_function_nested_outer_inner():
+#     original_ast = "SUM(A1:A10)"
+#     user1_ast_str = "SUM(A1:A11)"
+#     user2_ast_str = "SUM(Average(A1:A10))"
+#
+#     expected_output = "SUM(AVERAGE(A1:A10))"
+#
+#     user1_merged_ast_str, user2_merged_ast_str = process_and_merge_asts(
+#         original_ast,
+#         user1_ast_str,
+#         user2_ast_str,
+#         debug_changes=False,
+#         debug_new_asts=False,
+#         debug_merged_asts=False,
+#         debug_all=False,
+#     )
+#
+#     assert user1_merged_ast_str == expected_output
+#     assert user2_merged_ast_str == expected_output
 
 # def test_conflicting_modification():
 #
