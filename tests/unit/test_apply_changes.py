@@ -98,13 +98,20 @@ def test_mixed_modifications_and_structural_changes():
 # ADD FUNCTION ARGUMENTS #
 ##########################
 
-
-def test_add_argument_to_simple_function():
+def test_add_argument_right_to_simple_function():
     original_ast = parse("SUM(A1:A10)")
     modified_ast = parse("SUM(A1:A10, B1:B10)")
     changes = compare_asts(original_ast, modified_ast)
     new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
     assert str(new_ast) == "SUM(A1:A10, B1:B10)"
+
+
+def test_add_argument_left_to_simple_function():
+    original_ast = parse("SUM(A1:A10)")
+    modified_ast = parse("SUM(B1:B10, A1:A10)")
+    changes = compare_asts(original_ast, modified_ast)
+    new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
+    assert str(new_ast) == "SUM(B1:B10, A1:A10)"
 
 
 def test_add_argument_to_nested_function():
@@ -263,48 +270,57 @@ def test_add_outer_logical():
 # ROOT LEVEL Deletions
 ######################
 
-# def test_apply_root_deletions():
-#     original_ast = parse("SUM(A1:A10) + 1")
-#     modified_ast = parse("SUM(A1:A10)")
-#     changes = compare_asts(original_ast, modified_ast)
-#     new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
-#     assert str(new_ast) == "SUM(A1:A10)"
+
+def test_delete_root_unary():
+    original_ast = parse("-A1")
+    modified_ast = parse("A1")
+    changes = compare_asts(original_ast, modified_ast)
+    new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
+    assert str(new_ast) == "A1"
 
 
-# def test_delete_outer_function():
-#     original_ast = parse("SUM(A1)")
-#     modified_ast = parse("A1")
-#     changes = compare_asts(original_ast, modified_ast)
-#     new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
-#     assert str(new_ast) == "A1"
-#
-#
-# def test_delete_unary():
-#     original_ast = parse("-A1")
-#     modified_ast = parse("A1")
-#     changes = compare_asts(original_ast, modified_ast)
-#     new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
-#     assert str(new_ast) == "A1"
+def test_delete_root_function():
+    original_ast = parse("SUM(A1)")
+    modified_ast = parse("A1")
+    changes = compare_asts(original_ast, modified_ast)
+    new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
+    assert str(new_ast) == "A1"
+
+
+def test_delete_root_binary():
+    original_ast = parse("SUM(A1:A10) + 1")
+    modified_ast = parse("SUM(A1:A10)")
+    changes = compare_asts(original_ast, modified_ast)
+    new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
+    assert str(new_ast) == "SUM(A1:A10)"
 
 
 ################
 # HARDER CASES #
 ################
 
+# def test_add_two_outer_functions():
+#     original_ast = parse("A1")
+#     modified_ast = parse("AVERAGE(SUM(A1))")
+#     changes = compare_asts(original_ast, modified_ast)
+#     new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
+#     assert str(new_ast) == "AVERAGE(SUM(A1))"
+
+
 # def test_root_type_modification():
 #     original_ast = parse("A1")
 #     modified_ast = parse("A1:A10")
 #     changes = compare_asts(original_ast, modified_ast)
 #     new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
-#     assert str(new_ast) == "A2"
+#     assert str(new_ast) == "A1:A10"
 
-
+#
 # def test_binary_left_addition():
 #     original_ast = parse("A1 + A2")
 #     modified_ast = parse("A3 + A1 + A2")
 #     changes = compare_asts(original_ast, modified_ast)
 #     new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
-#     assert str(new_ast) == "A1 + A2 + A3"
+#     assert str(new_ast) == "A3 + A1 + A2"
 
 
 ##############################
