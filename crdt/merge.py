@@ -1,7 +1,8 @@
 from parser.ast_nodes import (Binary, Cell, CellRange, Function, Name, Number,
                               Unary)
 
-from crdt.apply_changes import add_child, find_node, remove_child, replace_node
+from crdt.ast_operations import (find_node, add_child_node, add_root_node, modify_node,
+                                 remove_child_node, remove_root_node)
 
 
 class NodeNotFoundError(Exception):
@@ -16,19 +17,14 @@ def merge_ast(original_ast, changes):
             handle_modification(original_node, modified_node, user_id="merged")
 
         elif change["type"] == "addition_arg":
-            node_to_add = find_node(original_ast, change["parent"].id_history)
+            parent_node = find_node(original_ast, change["parent"].id_history)
             child_node = change["node"]
-            user = change["node"].user_id
-            if node_to_add is None:
-                raise Exception("Parent node not found in original AST")
-            add_child(node_to_add, child_node, user_id=user)
+            add_child_node(parent_node, child_node, child_node.user_id)
 
         elif change["type"] == "deletion_arg":
-            node_to_remove = find_node(original_ast, change["parent"].id_history)
+            parent_node = find_node(original_ast, change["parent"].id_history)
             child_node = change["node"]
-            if node_to_remove is None:
-                raise Exception("Parent node not found in original AST")
-            remove_child(node_to_remove, child_node)
+            remove_child_node(parent_node, child_node)
 
         else:
             raise Exception("Invalid change type")
@@ -57,17 +53,17 @@ def handle_modification(original_node, modified_node, user_id):
     # Enhanced conflict resolution for CellRange nodes
     if isinstance(original_node, CellRange) and isinstance(modified_node, CellRange):
         merged_range = merge_cell_ranges(original_node, modified_node)
-        replace_node(original_node, merged_range, user_id="merged")
+        modify_node(original_node, merged_range, user_id="merged")
         return
 
     depth = calculate_depth(original_node.id_history, modified_node.id_history)
 
     if depth > 0:
-        replace_node(original_node, modified_node, user_id="merged")
+        modify_node(original_node, modified_node, user_id="merged")
     elif depth == 0:
         winner = conflict_resolution(original_node, modified_node)
         if winner == modified_node:
-            replace_node(original_node, modified_node, user_id="merged")
+            modify_node(original_node, modified_node, user_id="merged")
 
 
 def merge_cell_ranges(node1, node2):

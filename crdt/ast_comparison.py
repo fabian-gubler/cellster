@@ -8,6 +8,11 @@ def compare_asts(original_node, modified_node):
 
     def traverse_and_compare(node1, node2, comparison_context="standard"):
         # Modify the behavior based on the comparison context
+
+        if comparison_context == "deletion_check":
+            # Return True/False instead of appending to 'changes'
+            return node1.compare_content(node2) if node1 and node2 else False
+
         if comparison_context == "addition_check":
             # Special handling for addition checks
             # Return True/False instead of appending to 'changes'
@@ -19,6 +24,15 @@ def compare_asts(original_node, modified_node):
                 return False
 
         if type(node1) != type(node2):
+            # if node1.is_root() and node2.is_root():
+            #     # Handle root node modification as deletion followed by addition
+            #     changes.append(
+            #         {
+            #             "type": "root_modification",
+            #             "original": node1,
+            #             "modification": node2,
+            #         }
+            #     )
             if not check_for_addition_or_structural_change(node1, node2):
                 return  # No further traversal needed
 
@@ -123,11 +137,75 @@ def compare_asts(original_node, modified_node):
             raise Exception("Node type not found for change of type", type(node1))
 
     def check_for_addition_or_structural_change(node1, node2):
-        if isinstance(node2, Unary):
-            expr_match = traverse_and_compare(
-                node2.expr, node1, comparison_context="addition_check"
+        # Check for a new Binary root node addition
+        if isinstance(node2, Binary):
+            left_match = traverse_and_compare(
+                node2.left, node1, comparison_context="addition_check"
             )
-            if expr_match:
+            right_match = traverse_and_compare(
+                node2.right, node1, comparison_context="addition_check"
+            )
+
+            if left_match or right_match:
+                # Determine which subtree matches and include this information
+                matching_subtree = "left" if left_match else "right"
+                changes.append(
+                    {
+                        "type": "addition_root",
+                        "direction": matching_subtree,
+                        "child": node1,
+                        "parent": node2,
+                    }
+                )
+                return False
+            else:
+                # Structural change other than a simple addition
+                changes.append(
+                    {
+                        "type": "structural_change",
+                        "original": node1,
+                        "modification": node2,
+                    }
+                )
+        elif isinstance(node1, Binary):
+            if traverse_and_compare(
+                node1.left, node2, comparison_context="deletion_check"
+            ) or traverse_and_compare(
+                node1.right, node2, comparison_context="deletion_check"
+            ):
+                changes.append(
+                    {
+                        "type": "deletion_root",
+                        "child": node1.left
+                        if traverse_and_compare(
+                            node1.left, node2, comparison_context="deletion_check"
+                        )
+                        else node1.right,
+                        "parent": node2,
+                    }
+                )
+                return False
+
+            else:
+                raise Exception("Node type not found for change of type", type(node1))
+        # deletion check
+        elif isinstance(node1, Unary):
+            if traverse_and_compare(
+                node1.expr, node2, comparison_context="deletion_check"
+            ):
+                changes.append(
+                    {
+                        "type": "deletion_root",
+                        "child": node1.expr,
+                        "parent": node1,
+                    }
+                )
+                return False
+        # addition check
+        elif isinstance(node2, Unary):
+            if traverse_and_compare(
+                node2.expr, node1, comparison_context="addition_check"
+            ):
                 changes.append(
                     {
                         "type": "addition_root",
@@ -163,39 +241,19 @@ def compare_asts(original_node, modified_node):
                     )
                     return False
 
-        # Check for a new Binary root node addition
-        elif isinstance(node2, Binary):
-            left_match = traverse_and_compare(
-                node2.left, node1, comparison_context="addition_check"
-            )
-            right_match = traverse_and_compare(
-                node2.right, node1, comparison_context="addition_check"
-            )
-
-            if left_match or right_match:
-                # Determine which subtree matches and include this information
-                matching_subtree = "left" if left_match else "right"
-                changes.append(
-                    {
-                        "type": "addition_root",
-                        "direction": matching_subtree,
-                        "child": node1,
-                        "parent": node2,
-                    }
-                )
-                return False
-            else:
-                # Structural change other than a simple addition
-                changes.append(
-                    {
-                        "type": "structural_change",
-                        "original": node1,
-                        "modification": node2,
-                    }
-                )
-
-        else:
-            raise Exception("Node type not found for change of type", type(node1))
+        elif isinstance(node1, Function):
+            for arg in node1.arguments:
+                if traverse_and_compare(
+                    arg, node2, comparison_context="deletion_check"
+                ):
+                    changes.append(
+                        {
+                            "type": "deletion_root",
+                            "child": arg,
+                            "parent": node2,
+                        }
+                    )
+                    return False
 
     traverse_and_compare(original_node, modified_node)
     return changes
