@@ -6,41 +6,21 @@ from parser.ast_nodes import (Binary, Cell, CellRange, Function, Name, Number,
 def compare_asts(original_node, modified_node):
     changes = []
 
-    def traverse_and_compare(node1, node2):
-        # As far as I know this covers most cases (except for root level changes)
-        # TODO: Check for coverage of cases
-
-        # if node1 is None or node2 is None:
-        #     # Addition or deletion detected
-        #     change_type = "addition" if node1 is None else "deletion"
-        #     changes.append({"type": change_type, "original": node1, "modification": node2})
-        #     return
+    def traverse_and_compare(node1, node2, comparison_context="standard"):
+        # Modify the behavior based on the comparison context
+        if comparison_context == "addition_check":
+            # Special handling for addition checks
+            # Return True/False instead of appending to 'changes'
+            if type(node1) == type(node2):
+                return node1.compare_content(
+                    node2
+                )  # TODO: This should be done iteratively
+            else:
+                return False
 
         if type(node1) != type(node2):
-            # if node1.parent and node2.parent:
-            #     changes.append(
-            #         {"type": "deletion_arg", "parent": node1.parent, "child": node1}
-            #     )
-            #     changes.append(
-            #         {"type": "addition_arg", "parent": node1.parent, "child": node2}
-            #     )
-
-            # Structural change detected due to different types
-            # Potential structural change - deeper comparison needed
-
-            # TODO: Rule-based approach to determine parent level additions / deletions
-            # Check if this is an addition or a different type of structural change
-            # check_for_addition_or_structural_change(node1, node2)
-
-            # else:
-            changes.append(
-                {
-                    "type": "structural_change",
-                    "original": node1,
-                    "modification": node2,
-                }
-            )
-            return
+            if not check_for_addition_or_structural_change(node1, node2):
+                return  # No further traversal needed
 
         if isinstance(node1, Binary) and isinstance(node2, Binary):
             # Check for changes in operator
@@ -142,33 +122,75 @@ def compare_asts(original_node, modified_node):
             # print the node type
             raise Exception("Node type not found for change of type", type(node1))
 
-    # def check_for_addition_or_structural_change(node1, node2):
-    #     # Check for a new Binary root node addition
-    #     if isinstance(node2, Binary):
-    #         left_match = traverse_and_compare(node2.left, node1)
-    #         right_match = traverse_and_compare(node2.right, node1)
-    #
-    #         if left_match or right_match:
-    #             # Determine which subtree matches and include this information
-    #             matching_subtree = "left" if left_match else "right"
-    #             changes.append(
-    #                 {
-    #                     "type": "addition",
-    #                     "child": matching_subtree,
-    #                     "modification": node2,
-    #                 }
-    #             )
-    #         else:
-    #             # Structural change other than a simple addition
-    #             changes.append(
-    #                 {
-    #                     "type": "structural_change",
-    #                     "original": node1,
-    #                     "modification": node2,
-    #                 }
-    #             )
-    #     else:
-    #         raise Exception("Node type not found for change of type", type(node1))
+    def check_for_addition_or_structural_change(node1, node2):
+        if isinstance(node2, Unary):
+            expr_match = traverse_and_compare(
+                node2.expr, node1, comparison_context="addition_check"
+            )
+            if expr_match:
+                changes.append(
+                    {"type": "addition_root", "child": node1, "parent": node2}
+                )
+                return False
+            else:
+                changes.append(
+                    {
+                        "type": "structural_change",
+                        "original": node1,
+                        "direction": None,
+                        "modification": node2,
+                    }
+                )
+                return False
+
+        elif isinstance(node2, Function):
+            for arg in node2.arguments:
+                if traverse_and_compare(
+                    arg, node1, comparison_context="addition_check"
+                ):
+                    changes.append(
+                        {
+                            "type": "addition_root",
+                            "direction": None,
+                            "child": node1,
+                            "parent": node2,
+                        }
+                    )
+                    return False
+
+        # Check for a new Binary root node addition
+        elif isinstance(node2, Binary):
+            left_match = traverse_and_compare(
+                node2.left, node1, comparison_context="addition_check"
+            )
+            right_match = traverse_and_compare(
+                node2.right, node1, comparison_context="addition_check"
+            )
+
+            if left_match or right_match:
+                # Determine which subtree matches and include this information
+                matching_subtree = "left" if left_match else "right"
+                changes.append(
+                    {
+                        "type": "addition_root",
+                        "direction": matching_subtree,
+                        "child": node1,
+                        "parent": node2,
+                    }
+                )
+                return False
+            else:
+                # Structural change other than a simple addition
+                changes.append(
+                    {
+                        "type": "structural_change",
+                        "original": node1,
+                        "modification": node2,
+                    }
+                )
+
+        else:
+            raise Exception("Node type not found for change of type", type(node1))
 
     traverse_and_compare(original_node, modified_node)
     return changes

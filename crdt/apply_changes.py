@@ -1,3 +1,4 @@
+from copy import deepcopy
 from parser.ast_nodes import CellRange  # Number,; Logical,
 from parser.ast_nodes import Binary, Cell, Function, Name, Unary
 
@@ -36,10 +37,48 @@ def apply_changes_to_ast(original_ast, changes, user_id):
             updated_node = remove_child(node_to_remove, child_node)
             updated_nodes.append(updated_node)
 
+        elif change["type"] == "addition_root":
+            node_to_add_to = find_node(original_ast, change["child"].id_history)
+            new_root_node = change["parent"]
+            direction = change["direction"]
+
+            original_ast, updated_node = add_parent(
+                new_root_node, node_to_add_to, original_ast, user_id, direction
+            )
+
+            updated_nodes.append(updated_node)
+
         else:
             raise StructuralChangeException("Change type not found")
 
     return original_ast, updated_nodes
+
+
+def add_parent(new_root_node, node_to_add_to, original_ast, user_id, direction):
+    if isinstance(new_root_node, Unary):
+        new_root_node.expr = node_to_add_to
+    elif isinstance(new_root_node, Binary):
+        if direction == "left":
+            new_root_node.left = node_to_add_to
+        elif direction == "right":
+            new_root_node.right = node_to_add_to
+        else:
+            raise Exception("Invalid side specified for Binary node addition")
+    elif isinstance(new_root_node, Function):
+        # replace arguments of new_root_node with node_to_add_to
+        new_root_node.arguments = [node_to_add_to]
+    else:
+        raise Exception("Change not supported")
+
+    original_ast = new_root_node
+    new_root_node.refresh_node(user_id)
+
+    updated_node = {
+        "node": new_root_node,
+        "child": node_to_add_to,
+        "type": "addition_root",
+    }
+    return original_ast, updated_node
 
 
 def add_child(node_to_add, child_node, user_id):
@@ -59,7 +98,7 @@ def add_child(node_to_add, child_node, user_id):
         # Handle other types if needed
         raise Exception("Node type to add not found")
 
-    updated_node = {"node": node_to_add, "type": "addition_arg"}
+    updated_node = {"node": child_node, "parent": node_to_add, "type": "addition_arg"}
     return updated_node
 
 
@@ -75,41 +114,41 @@ def remove_child(node_to_remove, child_node):
         # Handle other types if needed
         raise Exception("Node type to remove not found")
 
-    updated_node = {"node": node_to_remove, "type": "deletion_arg"}
+    updated_node = {
+        "node": child_node,
+        "parent": node_to_remove,
+        "type": "deletion_arg",
+    }
     return updated_node
 
 
 def replace_node(node_to_change, changed_node, user_id):
     if isinstance(node_to_change, Binary):
         node_to_change.op = changed_node.op
-        node_to_change.refresh_node(user_id)
 
     elif isinstance(node_to_change, CellRange):
         node_to_change.start = changed_node.start
         node_to_change.end = changed_node.end
-        node_to_change.refresh_node(user_id)
 
     elif isinstance(node_to_change, Function):
         node_to_change.func_name = changed_node.func_name
-        node_to_change.refresh_node(user_id)
 
     elif isinstance(node_to_change, Unary):
         node_to_change.op = changed_node.op
-        node_to_change.refresh_node(user_id)
 
     elif isinstance(node_to_change, Cell):
         node_to_change.col = changed_node.col
         node_to_change.row = changed_node.row
-        node_to_change.refresh_node(user_id)
 
     elif isinstance(node_to_change, Name):
         node_to_change.name = changed_node.name
-        node_to_change.refresh_node(user_id)
 
     # TODO: Add other node types
 
     else:
         raise StructuralChangeException(type(node_to_change))
+
+    node_to_change.refresh_node(user_id)
 
     updated_node = {"node": node_to_change, "type": "modification"}
     return updated_node

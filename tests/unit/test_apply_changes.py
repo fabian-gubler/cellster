@@ -217,6 +217,7 @@ def test_change_cell_to_number():
 # ROOT LEVEL ADDITIONS
 ######################
 
+
 def test_unary_left_addition():
     original_ast = parse("A1")
     modified_ast = parse("-A1")
@@ -224,12 +225,31 @@ def test_unary_left_addition():
     new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
     assert str(new_ast) == "-A1"
 
-# def test_binary_right_addition():
-#     original_ast = parse("A1 + A2")
-#     modified_ast = parse("A1 + A2 + A3")
-#     changes = compare_asts(original_ast, modified_ast)
-#     new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
-#     assert str(new_ast) == "A1 + A2 + A3"
+
+# FIX: does not detect as addition
+def test_binary_right_addition():
+    original_ast = parse("A1 + A2")
+    modified_ast = parse("A1 + A2 + A3")
+    changes = compare_asts(original_ast, modified_ast)
+    new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
+    assert str(new_ast) == "A1 + A2 + A3"
+
+
+def test_complex_binary_right_addition():
+    original_ast = parse("SUM(A1:A10)")
+    modified_ast = parse("SUM(A1:A10) + 1")
+    changes = compare_asts(original_ast, modified_ast)
+    new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
+    assert str(new_ast) == "SUM(A1:A10) + 1"
+
+
+def test_add_outer_function():
+    original_ast = parse("A1")
+    modified_ast = parse("SUM(A1)")
+    changes = compare_asts(original_ast, modified_ast)
+    new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
+    assert str(new_ast) == "SUM(A1)"
+
 
 # def test_binary_left_addition():
 #     original_ast = parse("A1 + A2")
@@ -237,28 +257,6 @@ def test_unary_left_addition():
 #     changes = compare_asts(original_ast, modified_ast)
 #     new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
 #     assert str(new_ast) == "A1 + A2 + A3"
-
-# def test_unary_left_addition():
-#     original_ast = parse("A1")
-#     modified_ast = parse("- A1")
-#     changes = compare_asts(original_ast, modified_ast)
-#     new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
-#     assert str(new_ast) == "- A1"
-
-
-# def test_complex_binary_right_addition():
-#     original_ast = parse("SUM(A1:A10)")
-#     modified_ast = parse("SUM(A1:A10) + 1")
-#     changes = compare_asts(original_ast, modified_ast)
-#     new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
-#     # assert str(new_ast) == "SUM(A1:A10 + 1)"
-
-# def test_add_outer_function():
-#     original_ast = parse("A1")
-#     modified_ast = parse("SUM(A1)")
-#     changes = compare_asts(original_ast, modified_ast)
-#     new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
-#     # assert str(new_ast) == "SUM(A1:A10 + 1)"
 
 # def test_add_outer_logical():
 #     original_ast = parse("A1")
