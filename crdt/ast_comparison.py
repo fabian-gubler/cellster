@@ -129,7 +129,12 @@ def compare_asts(original_node, modified_node):
             )
             if expr_match:
                 changes.append(
-                    {"type": "addition_root", "child": node1, "parent": node2}
+                    {
+                        "type": "addition_root",
+                        "direction": None,
+                        "child": node1,
+                        "parent": node2,
+                    }
                 )
                 return False
             else:
