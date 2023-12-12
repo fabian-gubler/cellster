@@ -41,6 +41,8 @@ def merge_ast(original_ast, changes):
             ):
                 merged_range = merge_cell_ranges(original_node, modified_node)
                 replace_node(original_node, merged_range, user_id="merged")
+
+                # Skip the rest of the logic
                 continue
 
             depth = calculate_depth(original_node.id_history, modified_node.id_history)
@@ -50,7 +52,7 @@ def merge_ast(original_ast, changes):
             elif depth == 0:
                 winner = conflict_resolution(
                     original_node, modified_node
-                )  # Placeholder for conflict resolution logic
+                )
 
                 if winner == modified_node:
                     replace_node(original_node, modified_node, user_id="merged")
