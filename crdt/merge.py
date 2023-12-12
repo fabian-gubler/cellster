@@ -1,6 +1,7 @@
-from parser.ast_nodes import Cell, CellRange
+from parser.ast_nodes import (Binary, Cell, CellRange, Function, Name, Number,
+                              Unary)
 
-from crdt.apply_changes import find_node, replace_node
+from crdt.apply_changes import add_child, find_node, remove_child, replace_node
 
 
 class NodeNotFoundError(Exception):
@@ -40,6 +41,7 @@ def merge_ast(original_ast, changes):
             ):
                 merged_range = merge_cell_ranges(original_node, modified_node)
                 replace_node(original_node, merged_range, user_id="merged")
+                continue
 
             depth = calculate_depth(original_node.id_history, modified_node.id_history)
 
@@ -53,17 +55,20 @@ def merge_ast(original_ast, changes):
                 if winner == modified_node:
                     replace_node(original_node, modified_node, user_id="merged")
 
-        # # Handle additions
-        # elif change['type'] == 'addition':
-        #     parent_node = find_node(original_ast, change["parent_id_history"])
-        #     add_node(parent_node, change["node"], child_side=change["child_side"])
-        #
-        # # Handle deletions
-        # elif change['type'] == 'deletion':
-        #     parent, child_to_delete = \
-                # find_parent_and_child(original_ast, change["node"].id_history)
-        #     if parent and child_to_delete:
-        #         delete_node(parent, child_to_delete.id_history)
+        elif change["type"] == "addition_arg":
+            node_to_add = find_node(original_ast, change["parent"].id_history)
+            child_node = change["node"]
+            user = change["node"].user_id
+            if node_to_add is None:
+                raise Exception("Parent node not found in original AST")
+            add_child(node_to_add, child_node, user_id=user)
+
+        elif change["type"] == "deletion_arg":
+            node_to_remove = find_node(original_ast, change["parent"].id_history)
+            child_node = change["node"]
+            if node_to_remove is None:
+                raise Exception("Parent node not found in original AST")
+            remove_child(node_to_remove, child_node)
 
         else:
             raise Exception("Invalid change type")
@@ -72,7 +77,6 @@ def merge_ast(original_ast, changes):
 
 
 def merge_cell_ranges(node1, node2):
-    print("Merging:", node1, "with", node2)  # Debug input CellRanges
     start_row = min(node1.start.row, node2.start.row)
     end_row = max(node1.end.row, node2.end.row)
     start_col = min(
@@ -86,8 +90,6 @@ def merge_cell_ranges(node1, node2):
         Cell(end_col, end_row, user_id="merged"),
         user_id="merged",
     )
-
-    print("Merged range:", merged_range)  # Debug output
 
     return merged_range
 
