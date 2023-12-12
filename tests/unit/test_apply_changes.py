@@ -1,5 +1,6 @@
 from parser.parser import parse
-import pytest  # noqa: F401,
+
+import pytest  # pyright: ignore # noqa F401
 
 from crdt.apply_changes import apply_changes_to_ast
 from crdt.ast_comparison import compare_asts
@@ -216,6 +217,13 @@ def test_change_cell_to_number():
 # ROOT LEVEL ADDITIONS
 ######################
 
+def test_unary_left_addition():
+    original_ast = parse("A1")
+    modified_ast = parse("-A1")
+    changes = compare_asts(original_ast, modified_ast)
+    new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
+    assert str(new_ast) == "-A1"
+
 # def test_binary_right_addition():
 #     original_ast = parse("A1 + A2")
 #     modified_ast = parse("A1 + A2 + A3")
@@ -229,6 +237,13 @@ def test_change_cell_to_number():
 #     changes = compare_asts(original_ast, modified_ast)
 #     new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
 #     assert str(new_ast) == "A1 + A2 + A3"
+
+# def test_unary_left_addition():
+#     original_ast = parse("A1")
+#     modified_ast = parse("- A1")
+#     changes = compare_asts(original_ast, modified_ast)
+#     new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
+#     assert str(new_ast) == "- A1"
 
 
 # def test_complex_binary_right_addition():

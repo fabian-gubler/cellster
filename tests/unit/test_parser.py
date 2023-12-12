@@ -1,8 +1,8 @@
-from parser.ast_nodes import (Binary, Cell, CellRange, Function,  # Name,
-                              Logical, Number, Unary)
+from parser.ast_nodes import Function  # Name,
+from parser.ast_nodes import Binary, Cell, CellRange, Logical, Number, Unary
 from parser.parser import FormulaParseError, parse
 
-import pytest
+import pytest  # pyright: ignore # noqa F401
 
 
 def test_parse_number():

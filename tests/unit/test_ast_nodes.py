@@ -2,7 +2,7 @@
 from parser.ast_nodes import (Binary, Cell, CellRange, Function, Logical, Name,
                               Number, Unary)
 
-import pytest  # noqa: F401
+import pytest  # pyright: ignore # noqa F401
 
 # Test AST node enhancements
 
