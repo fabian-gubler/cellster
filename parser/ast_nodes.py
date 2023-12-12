@@ -24,6 +24,9 @@ class BaseNode:
         # Value is a combination of content and user ID
         return hash((self.node_content, self.user_id))
 
+    def is_root(self):
+        return self.parent is None
+
 
 class Function(BaseNode):
     def __init__(self, func_name, arguments, user_id):
@@ -129,8 +132,10 @@ class Binary(BaseNode):
     def __init__(self, left, op, right, user_id):
         super().__init__(f"Binary[{op}]", user_id)
         self.left = left
+        self.left.parent = self
         self.op = op
         self.right = right
+        self.right.parent = self
 
     def __str__(self):
         return f"{str(self.left)} {self.op} {str(self.right)}"
@@ -150,6 +155,7 @@ class Unary(BaseNode):
         super().__init__(f"Unary[{op}]", user_id)
         self.op = op
         self.expr = expr
+        self.expr.parent = self
 
     def __str__(self):
         return f"{self.op}{str(self.expr)}"
