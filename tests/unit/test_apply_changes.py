@@ -94,9 +94,18 @@ def test_mixed_modifications_and_structural_changes():
     assert str(new_ast) == "SUM(A2:A9, MAX(B2:B6))"
 
 
+def test_root_type_modification():
+    original_ast = parse("A1")
+    modified_ast = parse("A1:A10")
+    changes = compare_asts(original_ast, modified_ast)
+    new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
+    assert str(new_ast) == "A1:A10"
+
+
 ##########################
 # ADD FUNCTION ARGUMENTS #
 ##########################
+
 
 def test_add_argument_right_to_simple_function():
     original_ast = parse("SUM(A1:A10)")
@@ -306,13 +315,6 @@ def test_delete_root_binary():
 #     new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
 #     assert str(new_ast) == "AVERAGE(SUM(A1))"
 
-
-# def test_root_type_modification():
-#     original_ast = parse("A1")
-#     modified_ast = parse("A1:A10")
-#     changes = compare_asts(original_ast, modified_ast)
-#     new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
-#     assert str(new_ast) == "A1:A10"
 
 #
 # def test_binary_left_addition():
