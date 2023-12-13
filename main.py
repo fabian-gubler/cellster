@@ -6,7 +6,6 @@ from tkinter import font as tkfont  # import the font module
 from crdt.apply_changes import apply_changes_to_ast
 from crdt.ast_comparison import compare_asts
 from crdt.merge import merge_ast
-from utils.test_utils import process_and_merge_asts
 
 # import customtkinter
 
