@@ -101,7 +101,7 @@ def on_merge_click():
         switch_to_clear()  # Switch button to clear functionality
     except Exception as e:
         # Display error in red
-        output_label.config(text="Error: " + str(e), fg="red")
+        output_label.config(text="Merge Error: " + str(e), fg="#bf616a")
 
 
 # Hover colors for entry fields
