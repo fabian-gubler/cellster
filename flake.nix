@@ -34,6 +34,7 @@
             pythonPackages.flake8
             pythonPackages.isort
 			pythonPackages.debugpy
+			pythonPackages.tkinter
             pkgs.black
             pkgs.nodePackages.pyright
           ];
