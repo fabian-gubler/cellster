@@ -1,4 +1,4 @@
-from parser.ast_nodes import Binary, Cell, CellRange, Function, Name, Unary
+from parser.ast_nodes import Binary, Cell, CellRange, Function, Name, Unary, Number
 
 
 def find_node(root, target_history):
@@ -55,6 +55,9 @@ def modify_node(node_to_modify, new_node_data, user_id, return_node=False):
     elif isinstance(node_to_modify, Name):
         node_to_modify.name = new_node_data.name
 
+    elif isinstance(node_to_modify, Number):
+        node_to_modify.value = new_node_data.value
+
     # TODO: Add other node types
 
     else:
@@ -101,12 +104,17 @@ def remove_child_node(parent_node, child_node, return_node=False):
     # Logic to remove a child node from a parent node
     # This function removes child_node from parent_node's children
     if isinstance(parent_node, Function):
-        parent_node.arguments.remove(child_node)
+        # Find and remove the argument with matching id_history
+        for i, arg in enumerate(parent_node.arguments):
+            if arg.id_history == child_node.id_history:
+                parent_node.arguments.pop(i)
+
     elif isinstance(parent_node, Binary):
         if parent_node.left == child_node:
             parent_node.left = None
         elif parent_node.right == child_node:
             parent_node.right = None
+
     else:
         # Handle other types if needed
         raise Exception("Node type to remove not found")
