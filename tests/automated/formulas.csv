@@ -1,7 +1,7 @@
-Original,Modified
-A1 + B1,A1 + B1 + C1
-A2 - B2,A2 - B2 - C2
-A3 * B3,A3 * B3 * C3
-A4 / B4,A4 / B4 + 1
-SUM(A1:A5),SUM(A1:A6)
-AVERAGE(B1:B5),AVERAGE(B1:B6)
+Original,Modified 1, Modified 2
+A1 + B1,A1 + B1 + C1,A1 + B1 + C1
+A2 - B2,A2 - B2 - C2,A2 - B2 - C2
+A3 * B3,A3 * B3 * C3,A3 * B3 * C3
+A4 / B4,A4 / B4 + 1,A4 / B4 + 1
+SUM(A1:A5),SUM(A1:A6),SUM(A1:A6)
+AVERAGE(B1:B5),AVERAGE(B1:B6),AVERAGE(B1:B6)
