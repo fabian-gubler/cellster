@@ -1,9 +1,15 @@
 import tkinter as tk
+from copy import deepcopy
 from parser.parser import parse
 from tkinter import font as tkfont  # import the font module
 
 from crdt.apply_changes import apply_changes_to_ast
 from crdt.ast_comparison import compare_asts
+from crdt.merge import merge_ast
+from utils.test_utils import process_and_merge_asts
+
+# import customtkinter
+
 
 nord_colors = {
     "nord0": "#2E3440",
@@ -45,43 +51,52 @@ def on_clear_click():
     # clear the input fields and output label
     user1_entry.delete(0, tk.END)
     user2_entry.delete(0, tk.END)
+    user3_entry.delete(0, tk.END)
     output_label.config(text="", fg=text_color)
     error_label.config(text="")  # clear any previous error message
     # switch back to merge functionality
     switch_to_merge()
 
 
-def crdt_merge_formula(user1_formula, user2_formula):
-    try:
-        # Parse the formulas into ASTs
-        original_ast = parse(user1_formula)
-        modified_ast = parse(user2_formula)
-        # original_ast = parse("SUM(A1:A10)")  # Replace with the actual original formula
+def crdt_merge_formula(original_ast_str, user1_ast_str, user2_ast_str):
+    # Parse the formulas into ASTs
+    original_ast = parse(original_ast_str)
+    user1_original_ast = deepcopy(original_ast)
+    user2_original_ast = deepcopy(original_ast)
 
-        # Compare ASTs and get changes
-        changes = compare_asts(original_ast, modified_ast)
-        # changes_user2 = compare_asts(original_ast, user2_ast)
+    user1_modified_ast = parse(user1_ast_str)
+    user2_modified_ast = parse(user2_ast_str)
 
-        new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
+    # Compare ASTs
+    user1_changes = compare_asts(user1_original_ast, user1_modified_ast)
+    user2_changes = compare_asts(user2_original_ast, user2_modified_ast)
 
-        # Convert the final ASTs back to formula strings
-        merged_formula = str(new_ast)
+    # Apply changes
+    user1_new_ast, user1_new_nodes = apply_changes_to_ast(
+        user1_original_ast, user1_changes, user_id="user_1"
+    )
+    user2_new_ast, user2_new_nodes = apply_changes_to_ast(
+        user2_original_ast, user2_changes, user_id="user_2"
+    )
 
-        return merged_formula
-    except Exception as e:
-        error_message = str(e)
-        # Handle any exceptions
-        return error_message, error_message
+    # Merge changes
+    user1_merged_ast = merge_ast(user1_new_ast, user2_new_nodes)
+    # user2_merged_ast = merge_ast(user2_new_ast, user1_new_nodes)
+
+    return str(user1_merged_ast)
 
 
 def on_merge_click():
     # get the formula from both input fields
     user1_formula = user1_entry.get()
     user2_formula = user2_entry.get()
+    user3_formula = user3_entry.get()
 
     try:
         # Merge the formulas using CRDT logic
-        merged_formula = crdt_merge_formula(user1_formula, user2_formula)
+        merged_formula = crdt_merge_formula(user1_formula, user2_formula, user3_formula)
+        merged_formula = str(merged_formula)
+        # print(merged_formula)
         output_label.config(text="Merged Formula: " + str(merged_formula), fg="#a3be8c")
 
         switch_to_clear()  # Switch button to clear functionality
@@ -104,7 +119,7 @@ def on_entry_hover_leave(event, entry):
 
 
 def on_button_enter(e):
-    button_canvas.itemconfig(rounded_button, fill="#ff6666")  # lighter red when hovered
+    button_canvas.itemconfig(rounded_button, fill="#788c66")  # lighter red when hovered
 
 
 def on_button_leave(e):
@@ -120,16 +135,19 @@ def on_button_hover(e, button, hover_color="#bf616a"):
 
 # create the main window
 root = tk.Tk()
+# root = cusomtkinter.CTk()
 root.title("cellster: local-first excel formula merger")
 
 # Create an invisible frame as a spacer
 
 # set a larger font
-large_font = tkfont.Font(family="open sans", size=18, weight="bold")
+large_font = tkfont.Font(family="open sans", size=16, weight="bold")
+normal_font = tkfont.Font(family="open sans", size=14, weight="bold")
+
 
 # set the window size and position it in the center of the screen
 window_width = 700
-window_height = 550
+window_height = 650
 screen_width = root.winfo_screenwidth()
 screen_height = root.winfo_screenheight()
 center_x = int(screen_width / 2 - window_width / 2)
@@ -206,49 +224,86 @@ internal_padding_x = 10
 internal_padding_y = 5
 
 
-# Create entry for user1's formula with padding
+# Layout parameters
+padx = 10
+pady = 10
+ipadx = internal_padding_x
+ipady = internal_padding_y
+
+# Set row and column configurations for better alignment and spacing
+root.grid_rowconfigure(1, weight=1)
+root.grid_rowconfigure(2, weight=1)
+root.grid_columnconfigure(0, weight=1)
+root.grid_columnconfigure(1, weight=2)
+root.grid_columnconfigure(2, weight=2)
+root.grid_columnconfigure(3, weight=1)
+root.grid_columnconfigure(4, weight=1)
+root.grid_columnconfigure(5, weight=1)
+
+# Create labels and entries for user1, user2, and user3
 user1_label = tk.Label(
-    root, text="User 1 Formula", font=large_font, bg=bg_color, fg=text_color
+    root, text="Original Formula", font=large_font, bg=bg_color, fg=text_color
 )
-user1_label.pack(pady=(50, 20))
-# Create entry for user1's formula with hover effect
+user1_label.grid(row=0, column=2, columnspan=1, padx=20, pady=(50, 20), sticky="ew")
+
 user1_entry = tk.Entry(
     root,
-    font=large_font,
+    font=normal_font,
     width=20,
     bg=entry_default_bg,
     fg=nord_colors["nord5"],
     borderwidth=0,
 )
-user1_entry.pack(
-    ipadx=internal_padding_x, ipady=internal_padding_y, pady=external_padding
-)
+user1_entry.grid(row=1, column=2, columnspan=1, padx=20, pady=10, sticky="ew")
 user1_entry.bind("<Enter>", lambda e: on_entry_hover_enter(e, user1_entry))
 user1_entry.bind("<Leave>", lambda e: on_entry_hover_leave(e, user1_entry))
 
-# Create entry for user2's formula with padding
-user2_label = tk.Label(
-    root, text="User 2 Formula", font=large_font, bg=bg_color, fg=text_color
+
+# Create a Canvas widget for the line
+line_canvas = tk.Canvas(
+    root, height=1, bg=nord_colors["nord4"], bd=0, highlightthickness=0
 )
-user2_label.pack(pady=20)
-# Create entry for user2's formula with hover effect
+line_canvas.grid(row=2, column=0, columnspan=6, sticky="ew")
+
+# Draw a line across the canvas
+line_canvas.create_line(
+    0, 1, line_canvas.winfo_reqwidth(), 1, fill=nord_colors["nord4"]
+)
+
+user2_label = tk.Label(root, text="User 1", font=large_font, bg=bg_color, fg=text_color)
+user2_label.grid(row=3, column=2, columnspan=1, padx=20, pady=10, sticky="ew")
+
 user2_entry = tk.Entry(
     root,
-    font=large_font,
+    font=normal_font,
     width=20,
     bg=entry_default_bg,
     fg=nord_colors["nord5"],
     borderwidth=0,
 )
-user2_entry.pack(
-    ipadx=internal_padding_x, ipady=internal_padding_y, pady=external_padding
-)
+user2_entry.grid(row=4, column=2, columnspan=1, padx=20, pady=10, sticky="ew")
 user2_entry.bind("<Enter>", lambda e: on_entry_hover_enter(e, user2_entry))
 user2_entry.bind("<Leave>", lambda e: on_entry_hover_leave(e, user2_entry))
 
+# Create label and entry for user3
+user3_label = tk.Label(root, text="User 2", font=large_font, bg=bg_color, fg=text_color)
+user3_label.grid(row=5, column=2, columnspan=1, padx=20, pady=10, sticky="ew")
+
+user3_entry = tk.Entry(
+    root,
+    font=normal_font,
+    width=20,
+    bg=entry_default_bg,
+    fg=nord_colors["nord5"],
+    borderwidth=0,
+)
+user3_entry.grid(row=6, column=2, columnspan=1, padx=20, pady=10, sticky="ew")
+user3_entry.bind("<Enter>", lambda e: on_entry_hover_enter(e, user3_entry))
+user3_entry.bind("<Leave>", lambda e: on_entry_hover_leave(e, user3_entry))
+
 # custom button with rounded corners
 button_canvas = tk.Canvas(root, width=220, height=60, bg=bg_color, highlightthickness=0)
-button_canvas.pack(pady=20)
+button_canvas.grid(row=7, column=2, columnspan=1, pady=20)  # Span across 3 columns
 rounded_button = create_rounded_rectangle(
     button_canvas, 10, 10, 210, 60, radius=20, fill=button_color
 )
@@ -264,15 +319,13 @@ button_canvas.tag_bind(rounded_button, "<Leave>", on_button_leave)
 button_canvas.tag_bind(button_text, "<Enter>", on_button_enter)
 button_canvas.tag_bind(button_text, "<Leave>", on_button_leave)
 
-# create the output label
+# Grid layout for output label
 output_label = tk.Label(root, font=large_font, bg=bg_color, fg=text_color)
-output_label.pack(pady=20)
+output_label.grid(row=8, column=2, pady=20)  # Span across 3 columns
 
-# create an error label
-error_label = tk.Label(
-    root, text="", font=large_font, bg=bg_color, fg="red"
-)  # empty initially
-error_label.pack(pady=10)
+# Grid layout for error label
+error_label = tk.Label(root, text="", font=large_font, bg=bg_color, fg="red")
+error_label.grid(row=9, column=2, columnspan=3, pady=10)  # Span across 3 columns
 
 # start the application
 root.mainloop()
