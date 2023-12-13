@@ -16,17 +16,17 @@ def merge_ast(original_ast, changes):
             original_node = find_node(original_ast, modified_node.id_history)
             handle_modification(original_node, modified_node, user_id="merged")
 
-        elif change["type"] == "addition_arg":
+        elif change["type"] == "add_child":
             parent_node = find_node(original_ast, change["parent"].id_history)
             child_node = change["node"]
             add_child_node(parent_node, child_node, child_node.user_id)
 
-        elif change["type"] == "deletion_arg":
+        elif change["type"] == "del_child":
             parent_node = find_node(original_ast, change["parent"].id_history)
             child_node = change["node"]
             remove_child_node(parent_node, child_node)
 
-        elif change["type"] == "addition_root":
+        elif change["type"] == "add_root":
             child_node = find_node(original_ast, change["child"].id_history)
             new_root_node = change["parent"]
             direction = change["direction"]
@@ -39,7 +39,7 @@ def merge_ast(original_ast, changes):
                 return_node=False,
             )
 
-        elif change["type"] == "deletion_root":
+        elif change["type"] == "del_root":
             new_root_node = find_node(original_ast, change["child"].id_history)
 
             original_ast = remove_root_node(

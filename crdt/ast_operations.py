@@ -95,7 +95,7 @@ def add_child_node(parent_node, child_node, user_id, return_node=False):
         updated_node = {
             "node": child_node,
             "parent": parent_node,
-            "type": "addition_arg",
+            "type": "add_child",
         }
         return updated_node
 
@@ -123,7 +123,7 @@ def remove_child_node(parent_node, child_node, return_node=False):
         updated_node = {
             "node": child_node,
             "parent": parent_node,
-            "type": "deletion_arg",
+            "type": "del_child",
         }
         return updated_node
 
@@ -154,7 +154,7 @@ def add_root_node(
     updated_node = {
         "node": new_root_node,
         "child": child_node,
-        "type": "addition_root",
+        "type": "add_root",
     }
     return (original_ast, updated_node if return_node else original_ast)
 
@@ -163,7 +163,7 @@ def remove_root_node(original_ast, new_root_node, return_node=False):
     # Logic to remove the root node from the AST
     # This function removes the root node of the AST
     original_ast = new_root_node
-    updated_node = {"node": new_root_node, "type": "deletion_root"}
+    updated_node = {"node": new_root_node, "type": "del_root"}
     return (original_ast, updated_node if return_node else original_ast)
 
 

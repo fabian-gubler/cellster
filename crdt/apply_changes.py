@@ -24,7 +24,7 @@ def apply_changes_to_ast(original_ast, changes, user_id):
             )
             updated_nodes.append(updated_node)
 
-        elif change["type"] == "addition_arg":
+        elif change["type"] == "add_child":
             parent_node = find_node(original_ast, change["parent"].id_history)
             child_node = change["child"]
 
@@ -33,7 +33,7 @@ def apply_changes_to_ast(original_ast, changes, user_id):
             )
             updated_nodes.append(updated_node)
 
-        elif change["type"] == "deletion_arg":
+        elif change["type"] == "del_child":
             parent_node = find_node(original_ast, change["parent"].id_history)
             child_node = change["child"]
             if parent_node is None:
@@ -42,7 +42,7 @@ def apply_changes_to_ast(original_ast, changes, user_id):
             updated_node = remove_child_node(parent_node, child_node, return_node=True)
             updated_nodes.append(updated_node)
 
-        elif change["type"] == "addition_root":
+        elif change["type"] == "add_root":
             child_node = find_node(original_ast, change["child"].id_history)
             new_root_node = change["parent"]
             direction = change["direction"]
@@ -57,7 +57,7 @@ def apply_changes_to_ast(original_ast, changes, user_id):
             )
             updated_nodes.append(updated_node)
 
-        elif change["type"] == "deletion_root":
+        elif change["type"] == "del_root":
             new_root_node = find_node(original_ast, change["child"].id_history)
 
             original_ast, updated_node = remove_root_node(

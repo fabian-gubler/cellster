@@ -199,6 +199,21 @@ def test_change_cell_to_range_in_function():
 # ROOT LEVEL ADDITIONS
 ######################
 
+# TODO: Binary already has two children
+
+# def test_binary_right_addition_integration():
+#     original_ast_str = "A1 + A2"
+#     user1_ast_str = "A1 + A2 + A3"
+#     user2_ast_str = "A1 + A2 - A4"
+#
+#     expected_output = "A1 + A2 + A3 - A4"
+#
+#     user1_merged_ast_str, user2_merged_ast_str = process_and_merge_asts(
+#         original_ast_str, user1_ast_str, user2_ast_str
+#     )
+#
+#     assert user1_merged_ast_str == expected_output
+#     assert user2_merged_ast_str == expected_output
 
 # TODO: Key error parent
 
@@ -259,8 +274,6 @@ def test_change_cell_to_range_in_function():
 #     assert user2_merged_ast_str == expected_output
 
 
-
-
 #####################
 # ORDER MATTERS #
 #####################
@@ -300,21 +313,6 @@ def test_change_cell_to_range_in_function():
 #     assert user1_merged_ast_str == expected_output
 #     assert user2_merged_ast_str == expected_output
 
-# TODO: Binary already has two children
-
-# def test_binary_right_addition_integration():
-#     original_ast_str = "A1 + A2"
-#     user1_ast_str = "A1 + A2 + A3"
-#     user2_ast_str = "A1 + A2 - A4"
-#
-#     expected_output = "A1 + A2 + A3 - A4"
-#
-#     user1_merged_ast_str, user2_merged_ast_str = process_and_merge_asts(
-#         original_ast_str, user1_ast_str, user2_ast_str
-#     )
-#
-#     assert user1_merged_ast_str == expected_output
-#     assert user2_merged_ast_str == expected_output
 
 ################
 # NEEDS FIXING #

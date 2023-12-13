@@ -242,7 +242,7 @@ def test_unary_left_addition():
     assert str(new_ast) == "-A1"
 
 
-# FIX: does not detect as addition
+# FIX: does not detect as root addition
 def test_binary_right_addition():
     original_ast = parse("A1 + A2")
     modified_ast = parse("A1 + A2 + A3")

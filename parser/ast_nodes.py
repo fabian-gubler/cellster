@@ -132,10 +132,14 @@ class Binary(BaseNode):
     def __init__(self, left, op, right, user_id):
         super().__init__(f"Binary[{op}]", user_id)
         self.left = left
-        self.left.parent = self
-        self.op = op
         self.right = right
-        self.right.parent = self
+        self.op = op
+
+        # Set parent of left and right children
+        if self.left:
+            self.left.parent = self
+        if self.right:
+            self.right.parent = self
 
     def __str__(self):
         return f"{str(self.left)} {self.op} {str(self.right)}"

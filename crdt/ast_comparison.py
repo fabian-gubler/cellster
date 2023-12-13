@@ -49,20 +49,20 @@ def compare_asts(original_node, modified_node):
             # Check for changes in operands
             if not isinstance(node1.left, type(node2.left)):
                 changes.append(
-                    {"type": "deletion_arg", "parent": node1, "child": node1.left}
+                    {"type": "del_child", "parent": node1, "child": node1.left}
                 )
                 changes.append(
-                    {"type": "addition_arg", "parent": node1, "child": node2.left}
+                    {"type": "add_child", "parent": node1, "child": node2.left}
                 )
             else:
                 traverse_and_compare(node1.left, node2.left)
 
             if not isinstance(node1.right, type(node2.right)):
                 changes.append(
-                    {"type": "deletion_arg", "parent": node1, "child": node1.right}
+                    {"type": "del_child", "parent": node1, "child": node1.right}
                 )
                 changes.append(
-                    {"type": "addition_arg", "parent": node1, "child": node2.right}
+                    {"type": "add_child", "parent": node1, "child": node2.right}
                 )
             else:
                 traverse_and_compare(node1.right, node2.right)
@@ -86,20 +86,20 @@ def compare_asts(original_node, modified_node):
                 if arg1 is None:
                     # New argument added in modified_node
                     changes.append(
-                        {"type": "addition_arg", "parent": node1, "child": arg2}
+                        {"type": "add_child", "parent": node1, "child": arg2}
                     )
                 elif arg2 is None:
                     # Argument removed in modified_node (if you want to handle deletions)
                     changes.append(
-                        {"type": "deletion_arg", "parent": node1, "child": arg1}
+                        {"type": "del_child", "parent": node1, "child": arg1}
                     )
                 elif type(arg1) != type(arg2):
                     # Different type of argument found, treat as deletion and addition
                     changes.append(
-                        {"type": "deletion_arg", "parent": node1, "child": arg1}
+                        {"type": "del_child", "parent": node1, "child": arg1}
                     )
                     changes.append(
-                        {"type": "addition_arg", "parent": node1, "child": arg2}
+                        {"type": "add_child", "parent": node1, "child": arg2}
                     )
                 else:
                     traverse_and_compare(arg1, arg2)
@@ -154,7 +154,7 @@ def compare_asts(original_node, modified_node):
                 matching_subtree = "left" if left_match else "right"
                 changes.append(
                     {
-                        "type": "addition_root",
+                        "type": "add_root",
                         "direction": matching_subtree,
                         "child": node1,
                         "parent": node2,
@@ -178,7 +178,7 @@ def compare_asts(original_node, modified_node):
             ):
                 changes.append(
                     {
-                        "type": "deletion_root",
+                        "type": "del_root",
                         "child": node1.left
                         if traverse_and_compare(
                             node1.left, node2, comparison_context="deletion_check"
@@ -198,7 +198,7 @@ def compare_asts(original_node, modified_node):
             ):
                 changes.append(
                     {
-                        "type": "deletion_root",
+                        "type": "del_root",
                         "child": node1.expr,
                         "parent": node1,
                     }
@@ -211,7 +211,7 @@ def compare_asts(original_node, modified_node):
             ):
                 changes.append(
                     {
-                        "type": "addition_root",
+                        "type": "add_root",
                         "direction": None,
                         "child": node1,
                         "parent": node2,
@@ -236,7 +236,7 @@ def compare_asts(original_node, modified_node):
                 ):
                     changes.append(
                         {
-                            "type": "addition_root",
+                            "type": "add_root",
                             "direction": None,
                             "child": node1,
                             "parent": node2,
@@ -251,7 +251,7 @@ def compare_asts(original_node, modified_node):
                 ):
                     changes.append(
                         {
-                            "type": "deletion_root",
+                            "type": "del_root",
                             "child": arg,
                             "parent": node2,
                         }
