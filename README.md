@@ -8,6 +8,19 @@
   Break free from the chains of constant connectivity with the power of local-first software. Dive into a revolutionary way of collaboratively editing spreadsheet formulas without the need for real-time online presence. Experience seamless merges using CRDTs and witness the power of structured conflict resolution.
 </p>
 
+* [🌟 Main Features](#🌟-main-features)
+* [🔍 About](#🔍-about)
+  * [Introduction](#introduction)
+  * [Motivation](#motivation)
+* [🚀 Getting Started](#🚀-getting-started)
+  * [Setting up the Application (Using Nix)](#setting-up-the-application-(using-nix))
+    * [Prerequisites](#prerequisites)
+    * [Create Environment](#create-environment)
+  * [Setting Up the Application (Using Pip)](#setting-up-the-application-(using-pip))
+    * [Prerequisites](#prerequisites)
+    * [Create Environment](#create-environment)
+* [⚙️ Usage](#⚙️-usage)
+* [💡 Feedback & Contributions](#💡-feedback-&-contributions)
 
 ## 🌟 Main Features
 
@@ -29,32 +42,7 @@ With an abundance of text-based collaborative tools, collaborative spreadsheet e
 
 ## 🚀 Getting Started
 
-### Running the Application (Using Docker)
-
-1. **Prerequisites**: Ensure you have Docker installed. If not, install Docker from [here](https://docs.docker.com/get-docker/).
-
-2. Clone the repository:
-   ```sh
-   git clone https://github.com/fabian-gubler/cellster.git
-   ```
-
-3. Navigate to the project directory:
-   ```sh
-   cd cellster
-   ```
-
-4. Build and run the Docker container for the web application:
-   ```sh
-   docker build -t cellster .
-   docker run -p 8080:8080 cellster
-   ```
-
-5. Open your browser and visit `http://localhost:8080`.
-
-> **Note**: More detailed instructions and relevant scripts for Docker setup will be added shortly.
-
-
-### Developing the Application (Using Nix)
+### Setting up the Application (Using Nix)
 
 #### Prerequisites
 
@@ -82,11 +70,62 @@ experimental-features = nix-command flakes
    ```sh
    nix develop
    ```
+### Setting Up the Application (Using Pip)
 
-## 📖 Documentation
+> [!CAUTION]
+> **Using Pip vs Nix**: While setting up the application with `pip` is supported, it's important to note that this method does not guarantee the same level of reproducibility as the `nix` approach. The `nix` setup ensures a consistent development environment by precisely managing dependencies. Using `pip`, on the other hand, may result in differences due to variations in package versions or local configurations. We strongly recommend using `nix` for a more reliable and consistent development experience.
 
-Further documentation on how to use the tool, contribute, and delve deeper into its features will be provided soon. Stay tuned!
+#### Prerequisites
 
+1. **Python Installation**: Ensure that Python is installed on your system. You can download it from [the official Python website](https://www.python.org/downloads/).
+2. **Pip Installation**: Make sure you have pip installed, which is Python's package installer. It usually comes with Python installation.
+
+#### Create Environment
+
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/fabian-gubler/cellster.git
+   ```
+
+2. Navigate to the project directory:
+   ```sh
+   cd cellster
+   ```
+
+3. Create a virtual environment:
+   ```sh
+   python -m venv venv
+   ```
+
+4. Activate the virtual environment:
+   - On Windows:
+     ```sh
+     .\venv\Scripts\activate
+     ```
+   - On Unix or MacOS:
+     ```sh
+     source venv/bin/activate
+     ```
+
+5. Install the requirements:
+   ```sh
+   pip install -r requirements.txt
+   ```
+
+## ⚙️ Usage
+
+1. **Running the Application**:
+   - To start the interface, run:
+     ```sh
+     python main.py
+     ```
+
+2. **Running Tests with Pytest**:
+   - Ensure that you are in the project's root directory.
+   - Execute the following command to run the tests:
+     ```sh
+     pytest
+     ```
 ## 💡 Feedback & Contributions
 
 We're always open to feedback and contributions. Feel free to open issues, suggest features, or contribute to the codebase.
