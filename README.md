@@ -33,6 +33,7 @@ With an abundance of text-based collaborative tools, collaborative spreadsheet e
 #### Prerequisites
 
 1. **Install nix**: We use Nix for a reproducible development experience. Ensure you have it installed. Instructions for installation can be found [here](https://nixos.org/download.html).
+   - **Note for Windows Users**: Nix does not run natively on Windows. To use Nix on Windows, you need to set up the Windows Subsystem for Linux (WSL). Follow the [WSL installation guide](https://docs.microsoft.com/en-us/windows/wsl/install) to get started.
 
 2. **Enable nix flake**: The `flake` feature is still considered experimental thus a specific Nix configuration is necessary in `~/.config/nix/nix.conf`:
 
