@@ -109,17 +109,20 @@ pip --version
 ## ⚙️ Usage
 
 **Running the Application**:
+
 - To start the interface, run:
  ```sh
  python main.py
  ```
 
 **Running Tests with Pytest**:
+
 - Ensure that you are in the project's root directory.
 - Execute the following command to run the tests:
  ```sh
  pytest
-     ```
+ ```
+
 ## 💡 Feedback & Contributions
 
 We're always open to feedback and contributions. Feel free to open issues, suggest features, or contribute to the codebase.
