@@ -8,20 +8,6 @@
   Break free from the chains of constant connectivity with the power of local-first software. Dive into a revolutionary way of collaboratively editing spreadsheet formulas without the need for real-time online presence. Experience seamless merges using CRDTs and witness the power of structured conflict resolution.
 </p>
 
-* [🌟 Main Features](#🌟-main-features)
-* [🔍 About](#🔍-about)
-  * [Introduction](#introduction)
-  * [Motivation](#motivation)
-* [🚀 Getting Started](#🚀-getting-started)
-  * [Setting up the Application (Using Nix)](#setting-up-the-application-(using-nix))
-    * [Prerequisites](#prerequisites)
-    * [Create Environment](#create-environment)
-  * [Setting Up the Application (Using Pip)](#setting-up-the-application-(using-pip))
-    * [Prerequisites](#prerequisites)
-    * [Create Environment](#create-environment)
-* [⚙️ Usage](#⚙️-usage)
-* [💡 Feedback & Contributions](#💡-feedback-&-contributions)
-
 ## 🌟 Main Features
 
 1. **AST-based Formula Representation**: Convert and visualize Excel formulas as structured Abstract Syntax Trees.
