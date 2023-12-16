@@ -1,5 +1,5 @@
 {
-  description = "Data Science Configuration Flake";
+  description = "Basic Python Configuration Flake";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
