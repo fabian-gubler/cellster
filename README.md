@@ -72,8 +72,11 @@ experimental-features = nix-command flakes
    ```
 ### Setting Up the Application (Using Pip)
 
-> [!CAUTION]
-> **Using Pip vs Nix**: While setting up the application with `pip` is supported, it's important to note that this method does not guarantee the same level of reproducibility as the `nix` approach. The `nix` setup ensures a consistent development environment by precisely managing dependencies. Using `pip`, on the other hand, may result in differences due to variations in package versions or local configurations. We strongly recommend using `nix` for a more reliable and consistent development experience.
+> [!IMPORTANT]
+> **Using Pip vs Nix**:
+> - **Nix**: Guarantees a consistent development environment by managing dependencies, ensuring reproducibility across different setups.
+> - **Pip**: Prone to variations in package versions and local configurations, leading to potential inconsistencies.
+> - **Recommendation**: We recommend using `nix` for a more reliable setup. If using `pip`, be aware of these limitations.
 
 #### Prerequisites
 
