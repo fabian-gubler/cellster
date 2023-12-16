@@ -67,7 +67,12 @@ experimental-features = nix-command flakes
 #### Prerequisites
 
 1. **Python Installation**: Ensure that Python is installed on your system. You can download it from [the official Python website](https://www.python.org/downloads/).
-2. **Pip Installation**: Make sure you have pip installed, which is Python's package installer. It usually comes with Python installation.
+2. **Pip Installation**: Make sure you have `pip` installed, which is Python's package installer. It usually comes with Python installation.
+
+To check if `pip` is already installed on your system, run the following command:
+```sh
+pip --version
+```
 
 #### Create Environment
 
