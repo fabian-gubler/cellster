@@ -3,7 +3,7 @@ from parser.parser import parse
 import pytest  # pyright: ignore # noqa F401
 
 from ast_processing.apply_changes import apply_changes_to_ast
-from ast_processing.comparison import compare_asts
+from ast_processing.compare_asts import compare_asts
 from tests.utils.test_utils import print_detected_changes
 
 ######################

@@ -4,7 +4,7 @@
 # import pytest
 #
 # from ast_processing.apply_changes import apply_changes_to_ast
-# from ast_processing.comparison import compare_asts
+# from ast_processing.compare_asts import compare_asts
 # from test.utils.test_utils import process_and_merge_asts
 #
 #
