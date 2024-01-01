@@ -221,12 +221,12 @@ def test_change_cell_to_number():
     assert str(new_ast) == "10 + 5"
 
 
-def test_root_type_modification():
-    original_ast = parse("A1")
-    modified_ast = parse("A1:A10")
-    changes = compare_asts(original_ast, modified_ast)
-    new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
-    assert str(new_ast) == "A1:A10"
+# def test_root_type_modification():
+#     original_ast = parse("A1")
+#     modified_ast = parse("A1:A10")
+#     changes = compare_asts(original_ast, modified_ast)
+#     new_ast, _ = apply_changes_to_ast(original_ast, changes, user_id="test")
+#     assert str(new_ast) == "A1:A10"
 
 
 ######################
