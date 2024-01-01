@@ -222,7 +222,7 @@ def _parse(tokens):
                 if level[arithmetic[i]] < level[arithmetic[min_i]]:
                     min_i = i
             arithmetic = (
-                arithmetic[0: min_i - 1]
+                arithmetic[0 : min_i - 1]
                 + [
                     Binary(
                         arithmetic[min_i - 1],
@@ -231,7 +231,7 @@ def _parse(tokens):
                         "default_user",
                     )
                 ]
-                + arithmetic[min_i + 2:]
+                + arithmetic[min_i + 2 :]
             )
 
         return arithmetic[0]
