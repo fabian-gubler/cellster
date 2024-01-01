@@ -1,5 +1,6 @@
 import re
-from parser.ast_nodes import (
+from parser.nodes import (
+    BaseNode,
     Binary,
     Cell,
     CellRange,
@@ -243,7 +244,7 @@ def _parse(tokens):
     return expr
 
 
-def parse(code):
+def parse(code: str) -> BaseNode:
     tokens = _tokenize(code)
     # print("Tokens: ", tokens) # Debugging Print
     return _parse(tokens)

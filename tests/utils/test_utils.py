@@ -1,8 +1,8 @@
 from copy import deepcopy
 from parser.parser import parse
 
-from crdt.apply_changes import apply_changes_to_ast
-from crdt.ast_comparison import compare_asts
+from ast_processing.apply_changes import apply_changes_to_ast
+from ast_processing.comparison import compare_asts
 from crdt.merge import merge_ast
 
 

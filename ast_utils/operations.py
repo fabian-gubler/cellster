@@ -1,5 +1,4 @@
-from parser.ast_nodes import (Binary, Cell, CellRange, Function, Name, Number,
-                              Unary)
+from parser.nodes import Binary, Cell, CellRange, Function, Name, Number, Unary
 
 
 def find_node(root, target_history):
@@ -158,7 +157,9 @@ def add_root_node(
             "child": child_node,
             "type": "add_root",
         }
-        return (original_ast, updated_node if return_node else original_ast)
+        return (original_ast, updated_node)
+    else:
+        return original_ast
 
 
 def remove_root_node(original_ast, new_root_node, return_node=False):
@@ -180,3 +181,5 @@ def replace_root_node(original_ast, new_root_node, return_node=False):
     if return_node:
         updated_node = {"node": new_root_node, "type": "root_modification"}
         return (original_ast, updated_node if return_node else original_ast)
+    else:
+        return original_ast

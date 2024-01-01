@@ -1,6 +1,6 @@
-from parser.ast_nodes import Cell, CellRange
+from parser.nodes import Cell, CellRange
 
-from crdt.ast_operations import (
+from ast_utils.operations import (
     add_child_node,
     add_root_node,
     find_node,
@@ -56,7 +56,7 @@ def merge_ast(original_ast, changes):
             new_root_node = change["modification"]
 
             original_ast, _ = replace_root_node(
-                original_ast, new_root_node, user_id="merged", return_node=True
+                original_ast, new_root_node, return_node=True
             )
         else:
             raise Exception("Invalid change type")

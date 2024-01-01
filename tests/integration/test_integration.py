@@ -1,6 +1,6 @@
 import pytest  # pyright: ignore # noqa F401
 
-from utils.test_utils import process_and_merge_asts
+from tests.utils.test_utils import process_and_merge_asts
 
 ######################
 # Modification tests #
