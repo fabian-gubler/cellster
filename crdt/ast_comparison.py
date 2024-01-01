@@ -1,5 +1,6 @@
 from itertools import zip_longest
-from parser.ast_nodes import Binary, Cell, CellRange, Function, Name, Number, Unary
+from parser.ast_nodes import (Binary, Cell, CellRange, Function, Name, Number,
+                              Unary)
 
 
 def compare_asts(original_node, modified_node):
