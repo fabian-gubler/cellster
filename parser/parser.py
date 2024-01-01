@@ -1,6 +1,14 @@
 import re
-from parser.ast_nodes import (Binary, Cell, CellRange, Function, Logical, Name,
-                              Number, Unary)
+from parser.ast_nodes import (
+    Binary,
+    Cell,
+    CellRange,
+    Function,
+    Logical,
+    Name,
+    Number,
+    Unary,
+)
 
 
 def _tokenize(code):

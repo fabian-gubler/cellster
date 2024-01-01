@@ -1,8 +1,14 @@
 from parser.ast_nodes import Cell, CellRange
 
-from crdt.ast_operations import (add_child_node, add_root_node, find_node,
-                                 modify_node, remove_child_node,
-                                 remove_root_node, replace_root_node)
+from crdt.ast_operations import (
+    add_child_node,
+    add_root_node,
+    find_node,
+    modify_node,
+    remove_child_node,
+    remove_root_node,
+    replace_root_node,
+)
 
 
 class NodeNotFoundError(Exception):

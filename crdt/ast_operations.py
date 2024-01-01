@@ -1,5 +1,4 @@
-from parser.ast_nodes import (Binary, Cell, CellRange, Function, Name, Number,
-                              Unary)
+from parser.ast_nodes import Binary, Cell, CellRange, Function, Name, Number, Unary
 
 
 def find_node(root, target_history):
