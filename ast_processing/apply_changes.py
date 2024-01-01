@@ -23,47 +23,31 @@ class StructuralChangeException(Exception):
 def apply_changes_to_ast(original_ast, changes, user_id):
     updated_nodes: list = []
     for change in changes:
-        # TODO: multiple "append" is code duplication
-        if isinstance(change, NodeModification):
-            # node_to_modify = find_node(original_ast, change["original"].id_history)
+        match change:
+            case NodeModification():
+                # node_to_modify = find_node(original_ast, change["original"].id_history)
 
-            updated_node = modify_node(change, user_id)
-            updated_nodes.append(updated_node)
+                updated_node = modify_node(change, user_id)
 
-        elif isinstance(change, ChildAddition):
-            # parent_node = find_node(original_ast, change["parent"].id_history)
+            case ChildAddition():
+                # parent_node = find_node(original_ast, change["parent"].id_history)
+                updated_node = add_child(change, user_id)
 
-            updated_node = add_child(change, user_id)
-            updated_nodes.append(updated_node)
+            case ChildDeletion():
+                # parent_node = find_node(original_ast, change["parent"].id_history)
+                updated_node = remove_child(change, user_id)
 
-        elif isinstance(change, ChildDeletion):
-            # parent_node = find_node(original_ast, change["parent"].id_history)
+            case RootAddition():
+                # child_node = find_node(original_ast, change["child"].id_history)
+                original_ast, updated_node = add_root(original_ast, change, user_id)
 
-            updated_node = remove_child(change, user_id)
-            updated_nodes.append(updated_node)
+            case RootDeletion():
+                # new_root_node = find_node(original_ast, change["child"].id_history)
+                original_ast, updated_node = remove_root(original_ast, change, user_id)
 
-        elif isinstance(change, RootAddition):
-            # child_node = find_node(original_ast, change["child"].id_history)
+            case _:
+                raise StructuralChangeException("Change type not found")
 
-            original_ast, updated_nodes = add_root(original_ast, change, user_id)
-            updated_nodes.append(updated_node)
-
-        elif isinstance(change, RootDeletion):
-            # new_root_node = find_node(original_ast, change["child"].id_history)
-
-            original_ast, updated_node = remove_root(original_ast, change, user_id)
-            updated_nodes.append(updated_node)
-
-
-        elif change["type"] == "root_modification":
-            new_root_node = change["modification"]
-
-            original_ast, updated_node = replace_root_node(
-                original_ast, new_root_node, user_id, return_node=True
-            )
-            updated_nodes.append(updated_node)
-
-        else:
-            raise StructuralChangeException("Change type not found")
+        updated_nodes.append(updated_node)
 
     return original_ast, updated_nodes
