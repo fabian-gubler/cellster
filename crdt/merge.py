@@ -55,7 +55,7 @@ def merge_ast(original_ast, changes):
         elif change["type"] == "root_modification":
             new_root_node = change["modification"]
 
-            original_ast, updated_node = replace_root_node(
+            original_ast, _ = replace_root_node(
                 original_ast, new_root_node, user_id="merged", return_node=True
             )
         else:
@@ -91,11 +91,11 @@ def handle_modification(original_node, modified_node, user_id):
     depth = calculate_depth(original_node.id_history, modified_node.id_history)
 
     if depth > 0:
-        modify_node(original_node, modified_node, user_id="merged")
+        modify_node(original_node, modified_node, user_id)
     elif depth == 0:
         winner = conflict_resolution(original_node, modified_node)
         if winner == modified_node:
-            modify_node(original_node, modified_node, user_id="merged")
+            modify_node(original_node, modified_node, user_id)
 
 
 def merge_cell_ranges(node1, node2):
