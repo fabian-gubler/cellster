@@ -1,5 +1,13 @@
 from parser.nodes import Binary, Cell, CellRange, Function, Name, Number, Unary
 
+from ast_utils.change_classes import (
+    ChildAddition,
+    ChildDeletion,
+    NodeModification,
+    RootAddition,
+    RootDeletion,
+)
+
 
 def find_node(root, target_history):
     def id_history_matches(node_history, target_history):
@@ -32,47 +40,55 @@ def find_node(root, target_history):
         return find_node(root.expr, target_history)
 
 
-def modify_node(node_to_modify, new_node_data, user_id, return_node=False):
+def modify_node(change: NodeModification, user_id):
     # Logic to modify a node
     # This function updates the node_to_modify based on new_node_data and user_id
-    if isinstance(node_to_modify, Binary):
-        node_to_modify.op = new_node_data.op
 
-    elif isinstance(node_to_modify, CellRange):
-        node_to_modify.start = new_node_data.start
-        node_to_modify.end = new_node_data.end
+    original_node = change.original_node
+    new_node = change.new_node
 
-    elif isinstance(node_to_modify, Function):
-        node_to_modify.func_name = new_node_data.func_name
+    if isinstance(original_node, Binary):
+        original_node.op = new_node.op
 
-    elif isinstance(node_to_modify, Unary):
-        node_to_modify.op = new_node_data.op
+    elif isinstance(original_node, CellRange):
+        original_node.start = new_node.start
+        original_node.end = new_node.end
 
-    elif isinstance(node_to_modify, Cell):
-        node_to_modify.col = new_node_data.col
-        node_to_modify.row = new_node_data.row
+    elif isinstance(original_node, Function):
+        original_node.func_name = new_node.func_name
 
-    elif isinstance(node_to_modify, Name):
-        node_to_modify.name = new_node_data.name
+    elif isinstance(original_node, Unary):
+        original_node.op = new_node.op
 
-    elif isinstance(node_to_modify, Number):
-        node_to_modify.value = new_node_data.value
+    elif isinstance(original_node, Cell):
+        original_node.col = new_node.col
+        original_node.row = new_node.row
+
+    elif isinstance(original_node, Name):
+        original_node.name = new_node.name
+
+    elif isinstance(original_node, Number):
+        original_node.value = new_node.value
 
     # TODO: Add other node types
 
     else:
         raise Exception("Node type to modify not found")
 
-    node_to_modify.refresh_node(user_id)
+    original_node.refresh_node(user_id)
 
     if return_node:
-        updated_node = {"node": node_to_modify, "type": "modification"}
+        updated_node = {"node": original_node, "type": "modification"}
         return updated_node
 
 
-def add_child_node(parent_node, child_node, user_id, return_node=False):
+def add_child(change: ChildAddition, user_id):
     # Logic to add a child node to a parent node
     # This function appends child_node to the children of parent_node
+
+    child_node = change.child_node
+    parent_node = change.parent_node
+
     if isinstance(parent_node, Function):
         parent_node.arguments.append(child_node)
         child_node.refresh_node(user_id)
@@ -100,9 +116,13 @@ def add_child_node(parent_node, child_node, user_id, return_node=False):
         return updated_node
 
 
-def remove_child_node(parent_node, child_node, return_node=False):
+def remove_child(change: ChildDeletion, user_id):
     # Logic to remove a child node from a parent node
     # This function removes child_node from parent_node's children
+
+    parent_node = change.parent_node
+    child_node = change.child_node
+
     if isinstance(parent_node, Function):
         # Find and remove the argument with matching id_history
         for i, arg in enumerate(parent_node.arguments):
@@ -128,32 +148,37 @@ def remove_child_node(parent_node, child_node, return_node=False):
         return updated_node
 
 
-def add_root_node(
-    original_ast, new_root_node, child_node, direction, user_id, return_node=False
-):
+def add_root(original_ast, change: RootAddition, user_id):
+
     # Logic to add a new root node to the AST
     # This function sets new_root_node as the new root of the AST
-    if isinstance(new_root_node, Unary):
-        new_root_node.expr = child_node
-    elif isinstance(new_root_node, Binary):
+
+    parent_node = change.parent_node
+    child_node = change.child_node
+    direction = change.direction
+
+    if isinstance(parent_node, Unary):
+        parent_node.expr = child_node
+
+    elif isinstance(parent_node, Binary):
         if direction == "left":
-            new_root_node.left = child_node
+            parent_node.left = child_node
         elif direction == "right":
-            new_root_node.right = child_node
+            parent_node.right = child_node
         else:
             raise Exception("Invalid side specified for Binary node addition")
-    elif isinstance(new_root_node, Function):
+    elif isinstance(parent_node, Function):
         # replace arguments of new_root_node with child_node
-        new_root_node.arguments = [child_node]
+        parent_node.arguments = [child_node]
     else:
         raise Exception("Change not supported")
 
-    original_ast = new_root_node
-    new_root_node.refresh_node(user_id)
+    original_ast = parent_node
+    parent_node.refresh_node(user_id)
 
     if return_node:
         updated_node = {
-            "node": new_root_node,
+            "node": parent_node,
             "child": child_node,
             "type": "add_root",
         }
@@ -162,9 +187,11 @@ def add_root_node(
         return original_ast
 
 
-def remove_root_node(original_ast, new_root_node, return_node=False):
+def remove_root(original_ast, change: RootDeletion return_node=False):
     # Logic to remove the root node from the AST
     # This function removes the root node of the AST
+
+    new_root_node = change.parent_node
     original_ast = new_root_node
 
     if return_node:
