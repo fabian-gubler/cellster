@@ -1,12 +1,12 @@
 from parser.nodes import Cell, CellRange
 
 from ast_utils.operations import (
-    add_child_node,
-    add_root_node,
+    add_child,
+    add_root,
     find_node,
     modify_node,
-    remove_child_node,
-    remove_root_node,
+    remove_child,
+    remove_root,
     replace_root_node,
 )
 
@@ -30,13 +30,13 @@ def merge_ast(original_ast, changes):
         elif change["type"] == "del_child":
             parent_node = find_node(original_ast, change["parent"].id_history)
             child_node = change["node"]
-            remove_child_node(parent_node, child_node)
+            remove_child(parent_node, child_node)
 
         elif change["type"] == "add_root":
             child_node = find_node(original_ast, change["child"].id_history)
             new_root_node = change["parent"]
             direction = change["direction"]
-            original_ast = add_root_node(
+            original_ast = add_root(
                 original_ast,
                 new_root_node,
                 child_node,
@@ -48,7 +48,7 @@ def merge_ast(original_ast, changes):
         elif change["type"] == "del_root":
             new_root_node = find_node(original_ast, change["child"].id_history)
 
-            original_ast = remove_root_node(
+            original_ast = remove_root(
                 original_ast, new_root_node, return_node=False
             )
 
