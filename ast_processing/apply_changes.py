@@ -37,11 +37,11 @@ def apply_changes_to_ast(original_ast, changes, user_id):
 
             case RootAddition():
                 # child_node = find_node(original_ast, change["child"].id_history)
-                add_root(original_ast, change, user_id)
+                original_ast = add_root(change, user_id)
 
             case RootDeletion():
                 # new_root_node = find_node(original_ast, change["child"].id_history)
-                remove_root(original_ast, change, user_id)
+                original_ast = remove_root(original_ast, change, user_id)
 
             case _:
                 raise StructuralChangeException("Change type not found")
