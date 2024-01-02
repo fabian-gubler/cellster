@@ -40,47 +40,47 @@ def find_node(root, target_history):
         return find_node(root.expr, target_history)
 
 
-def modify_node(change: NodeModification, user_id):
-    # Logic to modify a node
-    # This function updates the node_to_modify based on new_node_data and user_id
 
+
+def modify_node(change: NodeModification, user_id: str):
     original_node = change.original_node
     new_node = change.new_node
 
-    if isinstance(original_node, Binary):
-        original_node.op = new_node.op
+    match original_node:
+        case Binary():
+            assert isinstance(new_node, Binary) 
+            original_node.op = new_node.op
 
-    elif isinstance(original_node, CellRange):
-        original_node.start = new_node.start
-        original_node.end = new_node.end
+        case CellRange():
+            assert isinstance(new_node, CellRange)
+            original_node.start = new_node.start
+            original_node.end = new_node.end
 
-    elif isinstance(original_node, Function):
-        original_node.func_name = new_node.func_name
+        case Function():
+            assert isinstance(new_node, Function)
+            original_node.func_name = new_node.func_name
 
-    elif isinstance(original_node, Unary):
-        original_node.op = new_node.op
+        case Unary():
+            assert isinstance(new_node, Unary)
+            original_node.op = new_node.op
 
-    elif isinstance(original_node, Cell):
-        original_node.col = new_node.col
-        original_node.row = new_node.row
+        case Cell():
+            assert isinstance(new_node, Cell)
+            original_node.col = new_node.col
+            original_node.row = new_node.row
 
-    elif isinstance(original_node, Name):
-        original_node.name = new_node.name
+        case Name():
+            assert isinstance(new_node, Name)
+            original_node.name = new_node.name
 
-    elif isinstance(original_node, Number):
-        original_node.value = new_node.value
+        case Number():
+            assert isinstance(new_node, Number)
+            original_node.value = new_node.value
 
-    # TODO: Add other node types
-
-    else:
-        raise Exception("Node type to modify not found")
+        case _:
+            raise Exception("Node type to modify not found")
 
     original_node.refresh_node(user_id)
-
-    if return_node:
-        updated_node = {"node": original_node, "type": "modification"}
-        return updated_node
-
 
 def add_child(change: ChildAddition, user_id):
     # Logic to add a child node to a parent node
@@ -105,15 +105,6 @@ def add_child(change: ChildAddition, user_id):
     else:
         # Handle other types if needed
         raise Exception("Node type to add child node not found")
-
-    # optionally return the updated node
-    if return_node:
-        updated_node = {
-            "node": child_node,
-            "parent": parent_node,
-            "type": "add_child",
-        }
-        return updated_node
 
 
 def remove_child(change: ChildDeletion, user_id):
@@ -187,7 +178,7 @@ def add_root(original_ast, change: RootAddition, user_id):
         return original_ast
 
 
-def remove_root(original_ast, change: RootDeletion return_node=False):
+def remove_root(original_ast, change: RootDeletion, return_node=False):
     # Logic to remove the root node from the AST
     # This function removes the root node of the AST
 

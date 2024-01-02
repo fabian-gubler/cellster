@@ -1,4 +1,4 @@
-from typing import Union
+from typing import TypeVar, Union
 from parser.nodes import BaseNode
 
 
