@@ -6,32 +6,6 @@ from ast_processing.compare_asts import compare_asts
 from crdt.merge import merge_ast
 
 
-def print_detected_changes(changes):
-    if not changes:
-        print("No changes detected")
-    else:
-        for change in changes:
-            # if empty print no changes
-            if change["type"] == "modification":
-                print(
-                    f"Modification: Original: {change['original']}, \
-                            Replacement: {change['modification']}"
-                )
-            else:
-                raise Exception("Invalid change type")
-
-            # elif change["type"] == "addition":
-            #     print(
-            #         f"Addition: Parent: {change['parent_id_history']}, Child: {change['node']}"
-            #     )
-            # elif change["type"] == "deletion":
-            #     print(f"Deletion: {change['node']}")
-            # elif change["type"] == "root_change":
-            #     print(f"Root Change: {change['node']}")
-            # elif change["type"] == "root_modification":
-            #     print(f"Root Modification: {change['node']}")
-
-
 def process_and_merge_asts(
     original_ast_str,
     user1_ast_str,
@@ -57,15 +31,6 @@ def process_and_merge_asts(
     # Compare ASTs
     user1_changes = compare_asts(user1_original_ast, user1_modified_ast)
     user2_changes = compare_asts(user2_original_ast, user2_modified_ast)
-
-    if debug_changes:
-        print("")
-        print("")
-        print("User 1 Changes:")
-        print_detected_changes(user1_changes)
-        print("")
-        print("User 2 Changes:")
-        print_detected_changes(user2_changes)
 
     # Proceed with the following steps once connection has been established ...
 
