@@ -40,15 +40,13 @@ def find_node(root, target_history):
         return find_node(root.expr, target_history)
 
 
-
-
 def modify_node(change: NodeModification, user_id: str):
     original_node = change.original_node
     new_node = change.new_node
 
     match original_node:
         case Binary():
-            assert isinstance(new_node, Binary) 
+            assert isinstance(new_node, Binary)
             original_node.op = new_node.op
 
         case CellRange():
@@ -81,6 +79,7 @@ def modify_node(change: NodeModification, user_id: str):
             raise Exception("Node type to modify not found")
 
     original_node.refresh_node(user_id)
+
 
 def add_child(change: ChildAddition, user_id):
     # Logic to add a child node to a parent node
@@ -130,17 +129,8 @@ def remove_child(change: ChildDeletion, user_id):
         # Handle other types if needed
         raise Exception("Node type to remove not found")
 
-    if return_node:
-        updated_node = {
-            "node": child_node,
-            "parent": parent_node,
-            "type": "del_child",
-        }
-        return updated_node
 
-
-def add_root(original_ast, change: RootAddition, user_id):
-
+def add_root(change: RootAddition, user_id):
     # Logic to add a new root node to the AST
     # This function sets new_root_node as the new root of the AST
 
@@ -164,40 +154,21 @@ def add_root(original_ast, change: RootAddition, user_id):
     else:
         raise Exception("Change not supported")
 
-    original_ast = parent_node
-    parent_node.refresh_node(user_id)
+    modified_ast = parent_node
+    modified_ast.refresh_node(user_id)
 
-    if return_node:
-        updated_node = {
-            "node": parent_node,
-            "child": child_node,
-            "type": "add_root",
-        }
-        return (original_ast, updated_node)
-    else:
-        return original_ast
-
+    return modified_ast
 
 def remove_root(original_ast, change: RootDeletion, return_node=False):
     # Logic to remove the root node from the AST
     # This function removes the root node of the AST
 
-    new_root_node = change.parent_node
+    new_root_node = change.child_node
     original_ast = new_root_node
-
-    if return_node:
-        updated_node = {"node": new_root_node, "type": "del_root"}
-        return (original_ast, updated_node if return_node else original_ast)
-
+    return original_ast
 
 def replace_root_node(original_ast, new_root_node, return_node=False):
     # Logic to replace the root node of the AST
     # This function sets new_root_node as the new root of the AST
 
     original_ast = new_root_node
-
-    if return_node:
-        updated_node = {"node": new_root_node, "type": "root_modification"}
-        return (original_ast, updated_node if return_node else original_ast)
-    else:
-        return original_ast
