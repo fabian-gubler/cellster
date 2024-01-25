@@ -1,4 +1,7 @@
-from parser.nodes import Binary, Cell, CellRange, Function, Name, Number, Unary
+from typing import Optional
+from ast_utils.custom_exceptions import NodeNotFoundError
+from parser.nodes import BaseNode, Binary, Cell, CellRange, Function, Name, Number, Unary
+from copy import deepcopy
 
 from ast_utils.change_classes import (
     ChildAddition,
@@ -8,14 +11,11 @@ from ast_utils.change_classes import (
     RootDeletion,
 )
 
-
-def find_node(root, target_history):
-    def id_history_matches(node_history, target_history):
-        # Function to check if any part of target_history matches with node_history
-        for i in range(1, len(target_history) + 1):
-            if node_history[:i] == target_history[:i]:
-                return True
-        return False
+def find_node(root: BaseNode, new_node: BaseNode) -> BaseNode:
+    target_history = new_node.id_history
+    def id_history_matches(node_history: list[str], target_history: list[str]) -> bool:
+        # Check if any part of target_history matches with node_history
+        return any(node_history[:i] == target_history[:i] for i in range(1, len(target_history) + 1))
 
     if id_history_matches(root.id_history, target_history):
         return root
@@ -23,21 +23,22 @@ def find_node(root, target_history):
     # Recursive search in composite nodes
     if isinstance(root, Function):
         for arg in root.arguments:
-            result = find_node(arg, target_history)
-            if result:
-                return result
+            try:
+                return find_node(arg, new_node)
+            except NodeNotFoundError:
+                continue
 
-    if isinstance(root, Binary):
-        left_result = find_node(root.left, target_history)
-        if left_result:
-            return left_result
+    elif isinstance(root, Binary):
+        try:
+            return find_node(root.left, new_node)
+        except NodeNotFoundError:
+            return find_node(root.right, new_node)
 
-        right_result = find_node(root.right, target_history)
-        if right_result:
-            return right_result
+    elif isinstance(root, Unary):
+        return find_node(root.expr, new_node)
 
-    if isinstance(root, Unary):
-        return find_node(root.expr, target_history)
+    # If the node is not found in any of the branches
+    raise NodeNotFoundError(f"Node with history {target_history} not found in AST.")
 
 
 def modify_node(change: NodeModification, user_id: str):
@@ -79,6 +80,7 @@ def modify_node(change: NodeModification, user_id: str):
             raise Exception("Node type to modify not found")
 
     original_node.refresh_node(user_id)
+    change.new_node = original_node # needed to find match in merge.py
 
 
 def add_child(change: ChildAddition, user_id):

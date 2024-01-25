@@ -11,6 +11,9 @@ class NodeModification(Change):
         self.original_node = original_node
         self.new_node = new_node
 
+    def __repr__(self):
+        return f"NodeModification(original_node={self.original_node}, new_node={self.new_node})"
+
 
 class ChildAddition(Change):
     def __init__(self, parent_node: BaseNode, child_node: BaseNode):
