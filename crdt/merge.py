@@ -1,6 +1,6 @@
 from parser.nodes import CellRange
 
-from ast_utils.change_classes import NodeModification
+from ast_utils.change_classes import ChildAddition, ChildDeletion, NodeModification, RootAddition
 from ast_utils.custom_exceptions import NodeNotFoundError
 from ast_utils.operations import find_node
 from crdt.utils import calculate_depth, conflict_resolution, merge_cell_ranges
@@ -33,6 +33,38 @@ def merge_changes(original_ast, changes):
                     merged_changes.append(change)
                 else:
                     continue  # No further action needed
+
+            case ChildAddition():
+                child_node = change.child_node
+                try:
+                    parent_node = find_node(original_ast, change.parent_node)
+                except NodeNotFoundError as e:
+                    print(f" Error: {e}")
+                    continue
+                addition = ChildAddition(parent_node, child_node)
+                merged_changes.append(addition)
+
+            case ChildDeletion():
+                child_node = change.child_node
+                try:
+                    parent_node = find_node(original_ast, change.parent_node)
+                except NodeNotFoundError as e:
+                    print(f" Error: {e}")
+                    continue
+                deletion = ChildDeletion(parent_node, child_node)
+                merged_changes.append(deletion)
+
+            case RootAddition():
+                try:
+                    child_node = find_node(original_ast, change.child_node)
+                except NodeNotFoundError as e:
+                    print(f" Error: {e}")
+                    continue
+
+                new_root = change.parent_node
+                direction = change.direction
+                addition = RootAddition(new_root, child_node, direction)
+                merged_changes.append(addition)
 
             case _:
                 raise Exception(f"Unhandled change type: {type(change)}")

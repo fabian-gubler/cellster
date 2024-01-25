@@ -2,9 +2,23 @@ from parser.nodes import BaseNode
 from parser.parser import parse
 from typing import List
 
-from ast_processing.apply_changes import apply_changes_to_ast
 from ast_processing.compare_asts import compare_asts
-from ast_utils.change_classes import Change
+from ast_utils.change_classes import (
+    Change,
+    ChildAddition,
+    ChildDeletion,
+    NodeModification,
+    RootAddition,
+    RootDeletion,
+)
+from ast_utils.operations import (
+    add_child,
+    add_root,
+    modify_node,
+    remove_child,
+    remove_root,
+    replace_root_node,
+)
 from crdt.merge import merge_changes
 
 
@@ -16,7 +30,26 @@ class ASTManager:
         # empty list
         if not changes:
             return
-        apply_changes_to_ast(self.ast, changes, user_id)
+
+        for change in changes:
+            match change:
+                case NodeModification():
+                    modify_node(change, user_id)
+
+                case ChildAddition():
+                    add_child(change, user_id)
+
+                case ChildDeletion():
+                    remove_child(change)
+
+                case RootAddition():
+                    self.ast = add_root(change, user_id)
+
+                # case RootDeletion():
+                #     self.ast = remove_root(original_ast, change, user_id)
+
+                case _:
+                    raise Exception("Change type not found")
 
     def get_changes_to(self, modified_ast_str: str) -> List[Change]:
         modified_ast = parse(modified_ast_str)

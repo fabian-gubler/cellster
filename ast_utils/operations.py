@@ -92,6 +92,9 @@ def add_child(change: ChildAddition, user_id):
 
     if isinstance(parent_node, Function):
         parent_node.arguments.append(child_node)
+        # Note: This is a fix to sort the arguments by timestamp
+        # There might be a better way to do this
+        # parent_node.arguments.sort(key=lambda node: node.timestamp)
         child_node.refresh_node(user_id)
 
     elif isinstance(parent_node, Binary):
@@ -108,7 +111,7 @@ def add_child(change: ChildAddition, user_id):
         raise Exception("Node type to add child node not found")
 
 
-def remove_child(change: ChildDeletion, user_id):
+def remove_child(change: ChildDeletion):
     # Logic to remove a child node from a parent node
     # This function removes child_node from parent_node's children
 
@@ -159,6 +162,7 @@ def add_root(change: RootAddition, user_id):
     modified_ast = parent_node
     modified_ast.refresh_node(user_id)
 
+    # Update the change object
     return modified_ast
 
 def remove_root(original_ast, change: RootDeletion, return_node=False):
