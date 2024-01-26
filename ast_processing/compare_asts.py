@@ -39,7 +39,7 @@ def compare_asts(original_node, modified_node):
                     node2, (Function, Binary, Unary)
                 ):
                     changes.append(RootNodeModification(node1, node2))
-            if not check_for_addition_or_structural_change(node1, node2):
+            if not check_for_structural_change(node1, node2):
                 return  # No further traversal needed
 
         if isinstance(node1, Binary) and isinstance(node2, Binary):
@@ -113,7 +113,7 @@ def compare_asts(original_node, modified_node):
             # print the node type
             raise Exception("Node type not found for change of type", type(node1))
 
-    def check_for_addition_or_structural_change(node1, node2):
+    def check_for_structural_change(node1, node2):
         # Check for a new Binary root node addition
         if isinstance(node2, Binary):
             left_match = traverse_and_compare(
