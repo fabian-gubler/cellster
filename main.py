@@ -1,13 +1,8 @@
 import tkinter as tk
 from copy import deepcopy
+from crdt.ast_manager import ASTManager
 from parser.parser import parse
 from tkinter import font as tkfont  # import the font module
-
-from ast_processing.apply_changes import apply_changes_to_ast
-from ast_processing.compare_asts import compare_asts
-from crdt.merge import merge_ast
-
-# import customtkinter
 
 
 nord_colors = {
@@ -57,32 +52,42 @@ def on_clear_click():
     switch_to_merge()
 
 
-def crdt_merge_formula(original_ast_str, user1_ast_str, user2_ast_str):
-    # Parse the formulas into ASTs
+def process_and_merge_asts(original_ast_str, user1_ast_str, user2_ast_str):
+    # Parse the original AST once, important for id_history
     original_ast = parse(original_ast_str)
-    user1_original_ast = deepcopy(original_ast)
-    user2_original_ast = deepcopy(original_ast)
 
-    user1_modified_ast = parse(user1_ast_str)
-    user2_modified_ast = parse(user2_ast_str)
+    # Initialize AST managers with deep copies of the original AST
+    user1_ast_manager = ASTManager(deepcopy(original_ast))
+    user2_ast_manager = ASTManager(deepcopy(original_ast))
 
-    # Compare ASTs
-    user1_changes = compare_asts(user1_original_ast, user1_modified_ast)
-    user2_changes = compare_asts(user2_original_ast, user2_modified_ast)
+    # Create changes
+    user1_changes = user1_ast_manager.get_changes_to(user1_ast_str)
+    user2_changes = user2_ast_manager.get_changes_to(user2_ast_str)
 
     # Apply changes
-    user1_new_ast, user1_new_nodes = apply_changes_to_ast(
-        user1_original_ast, user1_changes, user_id="user_1"
-    )
-    user2_new_ast, user2_new_nodes = apply_changes_to_ast(
-        user2_original_ast, user2_changes, user_id="user_2"
-    )
+    user1_ast_manager.apply_changes(user1_changes, user_id="user_1")
+    user2_ast_manager.apply_changes(user2_changes, user_id="user_2")
 
     # Merge changes
-    user1_merged_ast = merge_ast(user1_new_ast, user2_new_nodes)
-    # user2_merged_ast = merge_ast(user2_new_ast, user1_new_nodes)
+    user1_merged_changes = user1_ast_manager.merge_changes(user2_changes)
+    user2_merged_changes = user2_ast_manager.merge_changes(user1_changes)
 
-    return str(user1_merged_ast)
+    # Apply merged changes
+    user1_ast_manager.apply_changes(user1_merged_changes, user_id="user_1")
+    user2_ast_manager.apply_changes(user2_merged_changes, user_id="user_2")
+
+    return str(user1_ast_manager), str(user2_ast_manager)
+
+
+def crdt_merge_formula(original_ast_str, user1_ast_str, user2_ast_str):
+
+    user1_merged_ast_str, user2_merged_ast_str = process_and_merge_asts(
+        original_ast_str,
+        user1_ast_str,
+        user2_ast_str,
+    )
+
+    return user1_merged_ast_str
 
 
 def on_merge_click():
